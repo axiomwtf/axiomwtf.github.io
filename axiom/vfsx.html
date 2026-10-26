@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
 <title>vfsx — Axiom</title>
-<meta name="description" content="vfsx. A signed, content-addressed virtual filesystem archive format. One directory in, one verified archive out. A project by Axiom.">
+<meta name="description" content="vfsx. A signed, content-addressed virtual filesystem archive. One directory in, one verified archive out. A project by Axiom.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-1 -1 2 2'%3E%3Cpath d='M0,-1 C.05,-.28 .28,-.05 1,0 C.28,.05 .05,.28 0,1 C-.05,.28 -.28,-.05 -1,0 C-.28,-.05 -.05,-.28 0,-1Z' fill='%23f2f2f2'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -91,26 +91,25 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
 <section id="about"><div class="wrap">
   <p class="label">01 &mdash; About</p>
   <h2>One directory in, one verified archive out.</h2>
-  <p class="lead">vfsx is a signed, content-addressed virtual filesystem archive format by Axiom. A single directory is packed into a self-verifying `.vfsx.tar.*` file with built-in deduplication, incremental deltas, and Ed25519 signing.</p>
-  <p class="body">The `.vfsx` in the filename is not just an extension &mdash; it's part of the stem: `dir.vfsx.tar.zst`. This distinguishes vfsx archives from plain tarballs. Every archive carries its manifest, content-addressed index, and a signature. Verification is a single command.</p>
+  <p class="lead">vfsx is a signed, content-addressed virtual filesystem archive format by Axiom. A single directory is packed into a `.vfsx.tar.*` file with an Ed25519 signature, embedded manifest, and index.</p>
+  <p class="body">The `.vfsx` in the filename is part of the stem, not just an extension: `dir.vfsx.tar.zst`. This distinguishes vfsx archives from plain tarballs. Every archive carries its manifest, index, and signature. Verification is a single command.</p>
   <p class="body">It started as a way to make backups you can actually trust &mdash; verify the signature, check the hashes, know nothing was tampered with. We build what we want to exist and share it when it's ready.</p>
 </div></section>
 
 <section id="format"><div class="wrap">
   <p class="label">02 &mdash; Format</p>
-  <h2>One file, verified end to end.</h2>
+  <h2>One file, end to end.</h2>
   <p class="body">The output is always exactly one file: `dir.vfsx.tar.zst` (or `.vfsx.tar.xz`, `.vfsx.tar.gz`). No separate manifest, index, or signature file. Everything lives inside one archive.</p>
   <div class="grid">
-    <div class="cell"><span class="n">01</span><h3>Signed</h3><p>Ed25519 signature over manifest and index. Verify with the author's public key.</p></div>
+    <div class="cell"><span class="n">01</span><h3>Signed</h3><p>Ed25519 signature over manifest + index JSON. Verify with the author's public key.</p></div>
     <div class="cell"><span class="n">02</span><h3>Indexed</h3><p>Content-addressed manifest + index for random access and hash verification.</p></div>
     <div class="cell"><span class="n">03</span><h3>Deduplicated</h3><p>Identical files share storage via a global blob store at <code>~/.cache/vfsx/blobs/</code>.</p></div>
-    <div class="cell"><span class="n">04</span><h3>Incremental</h3><p>Three models: reference+delta, snapshot chains, and global blob store.</p></div>
+    <div class="cell"><span class="n">04</span><h3>Incremental</h3><p>Reference+delta, snapshot chains, and global blob store &mdash; all in one.</p></div>
   </div>
-  <pre>vfsx create ./project -o project.vfsx.tar.zst  # first run generates your key
-vfsx key export -o mykey.vfsx                    # share this
-vfsx verify project.vfsx.tar.zst --key mykey.vfsx # anyone checks your archive
-</pre>
-  <p class="caption">Zstandard compression by default. Pass <code>--xz</code> or <code>--gz</code> to switch.</p>
+<pre>vfsx create ./project -o project.vfsx.tar.zst  # first run generates your key
+vfsx key export -o mykey.vfsx                  # share this
+vfsx verify project.vfsx.tar.zst -k mykey.vfsx # anyone checks your archive</pre>
+  <p class="caption">Zstandard compression by default. Pass <code>-c xz</code> or <code>-c gzip</code> to switch.</p>
 </div></section>
 
 <section id="incremental"><div class="wrap">
@@ -122,7 +121,7 @@ vfsx verify project.vfsx.tar.zst --key mykey.vfsx # anyone checks your archive
       <thead><tr><th>Model</th><th>Command</th><th>How it works</th></tr></thead>
       <tbody>
         <tr><td>Reference + Delta</td><td><code>vfsx create --base base.vfsx.tar.zst</code></td><td>Delta archive references base by hash. Only changed/new files stored in delta.</td></tr>
-        <tr><td>Snapshot Chain</td><td><code>vfsx create --base previous.vfsx.tar.zst</code></td><td>Each archive carries parent_hash. Extraction replays chain automatically.</td></tr>
+        <tr><td>Snapshot Chain</td><td><code>vfsx create --base prev.vfsx.tar.zst</code></td><td>Each archive carries parent_hash. Extraction replays chain automatically.</td></tr>
         <tr><td>Blob Store</td><td><code>vfsx create ./dir</code></td><td>Global content-addressed store. Identical files across archives share storage.</td></tr>
       </tbody>
     </table>
@@ -135,28 +134,25 @@ vfsx verify project.vfsx.tar.zst --key mykey.vfsx # anyone checks your archive
   <p class="body">Run <code>vfsx create</code> and it generates your Ed25519 identity at <code>~/.config/vfsx/keys/</code>. Export the public key as a <code>.vfsx</code> file for others to verify your archives.</p>
   <div class="kv">
     <div class="kv-row"><span class="k">Generate</span><span class="v"><code>vfsx key gen [--force]</code> &mdash; creates identity.pub and identity.priv</span></div>
-    <div class="kv-row"><span class="k">Export</span><span class="v"><code>vfsx key export -o mykey.vfsx --owner "alice@laptop"</code> &mdash; valid vfsx archive with pubkey + metadata</span></div>
+    <div class="kv-row"><span class="k">Export</span><span class="v"><code>vfsx key export -o mykey.vfsx --owner "alice@laptop"</code> &mdash; vfsx archive with pubkey + metadata</span></div>
     <div class="kv-row"><span class="k">Import</span><span class="v"><code>vfsx key import mykey.vfsx</code> &mdash; imports pubkey for verification</span></div>
-    <div class="kv-row"><span class="k">Verify</span><span class="v"><code>vfsx verify archive.vfsx.tar.zst --key mykey.vfsx</code> &mdash; checks signature + content hashes</span></div>
+    <div class="kv-row"><span class="k">Verify</span><span class="v"><code>vfsx verify archive.vfsx.tar.zst -k mykey.vfsx</code> &mdash; checks signature + content hashes</span></div>
   </div>
 </div></div></section>
 
 <section id="cli"><div class="wrap">
   <p class="label">05 &mdash; CLI</p>
-  <h2>Six subcommands.</h2>
-<pre>vfsx create [DIR] -o OUTPUT [--zst|--xz|--gz] [--level N] [--base BASE] [--threads N]
-vfsx extract ARCHIVE [-C DIR] [--verify] [--no-overwrite]
-vfsx list ARCHIVE [--json] [--long] [--xattrs]
-vfsx verify ARCHIVE --key KEY.vfsx [--strict] [--hashes-only]
+  <h2>Nine subcommands.</h2>
+<pre>vfsx create [DIR] [-o OUTPUT] [-c ZSTD|XZ|GZIP] [--level N] [--base ARCHIVE] [--follow-links] [--progress]
+vfsx extract ARCHIVE [-C DIR] [--force] [--progress]
+vfsx list ARCHIVE [--json] [--detail]
+vfsx verify ARCHIVE -k KEY [--strict]
 vfsx key gen [--force]
-vfsx key export [-o OUTPUT] [--owner STRING]
-
-aliases:
-  x = extract
-  ls = list
-  v = verify
-  k = key</pre>
-  <p class="caption">Default directory: <code>.</code>. Default compression: zstd level 3 with threads = CPU count.</p>
+vfsx key export -o FILE [--owner NAME]
+vfsx key import KEY
+vfsx key show
+vfsx mount ARCHIVE MOUNT_POINT [--force] [--allow-other]</pre>
+  <p class="caption">Default directory: <code>.</code>. Default compression: zstd level 3. Keys auto-generate on first <code>vfsx create</code>.</p>
 </div></div></section>
 
 <section id="find"><div class="wrap">
