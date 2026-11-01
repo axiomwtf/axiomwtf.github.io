@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Axiom: small tools, built to last</title>
+<meta name="description" content="Axiom is an independent studio making small, plain, dependable software.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-1 -1 2 2'%3E%3Cpath d='M0,-1 C.05,-.28 .28,-.05 1,0 C.28,.05 .05,.28 0,1 C-.05,.28 -.28,.05 -1,0 C-.28,-.05 -.05,-.28 0,-1Z' fill='%23f2f2f2'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,600..900&family=Spline+Sans+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#efece3;--ink:#121110;--sig:#1638ff;--soft:#5d5a53;--d:"Archivo",sans-serif;--m:"Spline Sans Mono",monospace}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font:15px/1.6 var(--m);-webkit-font-smoothing:antialiased}
+::selection{background:var(--sig);color:var(--paper)}
+a{color:inherit}
+.c{max-width:1240px;margin:0 auto;padding:0 24px}
+header{position:sticky;top:0;z-index:9;background:var(--ink);color:var(--paper)}
+header .c{display:flex;justify-content:space-between;align-items:center;height:44px;gap:16px}
+.brand{font:900 18px var(--d);font-stretch:125%;text-transform:uppercase;text-decoration:none;display:flex;gap:8px;align-items:center}
+.brand i{width:12px;height:12px;background:var(--sig);clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%)}
+nav{display:flex;overflow-x:auto}nav a{font-size:12px;text-transform:uppercase;text-decoration:none;padding:0 12px;line-height:44px;white-space:nowrap}
+nav a:hover{background:var(--sig)}
+.hero{border-bottom:2px solid var(--ink);padding:40px 0 0}
+.hero>.c{width:100%}
+.tag{font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+.tag:before{content:"■ ";color:var(--sig)}
+h1{font:900 clamp(72px,19vw,280px)/.8 var(--d);font-stretch:125%;text-transform:uppercase;letter-spacing:-.05em;margin:28px 0 32px;word-break:break-word}
+h1 em{font-style:normal;color:var(--sig)}
+.sub{font:600 clamp(20px,3vw,32px)/1.2 var(--d);max-width:780px;padding-bottom:32px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border-top:2px solid var(--ink);margin:0 -24px}
+.meta div{padding:14px 24px;border-right:1px solid var(--ink);font-size:12px}.meta div:last-child{border:0}
+.meta b{display:block;font:800 22px var(--d);margin-top:4px}
+section{padding:72px 0;border-bottom:2px solid var(--ink)}
+.head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:24px;margin-bottom:40px;align-items:end}
+h2{font:800 clamp(30px,5vw,60px)/1 var(--d);letter-spacing:-.03em;text-transform:uppercase}
+.list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));border:2px solid var(--ink);background:var(--ink);gap:2px}
+.p{background:var(--paper);padding:24px;transition:background .15s,color .15s}
+.p:hover{background:var(--sig);color:var(--paper)}.p:hover p,.p:hover b{color:var(--paper)}
+.p b{font:900 56px/1 var(--d);color:var(--sig);display:block;margin-bottom:28px}
+.p h3{font:800 20px var(--d);text-transform:uppercase;margin-bottom:6px}
+.p p{color:var(--soft)}
+.work{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.w{display:flex;flex-direction:column;justify-content:space-between;min-height:320px;padding:24px;border:2px solid var(--ink);background:var(--paper);text-decoration:none;box-shadow:8px 8px 0 var(--ink);transition:transform .15s,box-shadow .15s}
+.w:hover{transform:translate(-4px,-4px);box-shadow:12px 12px 0 var(--sig)}
+.w h3{font:900 clamp(48px,7vw,96px)/.9 var(--d);text-transform:uppercase;letter-spacing:-.04em}
+.w p{margin-top:16px}
+.w span{align-self:flex-end;font:900 40px var(--d);color:var(--sig)}
+.cta{display:inline-block;font:900 clamp(26px,6vw,72px) var(--d);text-transform:uppercase;text-decoration:none;background:var(--ink);color:var(--paper);padding:12px 20px;word-break:break-all}
+.cta:hover{background:var(--sig)}
+footer{padding:20px 0;font-size:12px;text-transform:uppercase}
+footer .c{display:flex;justify-content:space-between;gap:12px}
+pre{background:var(--ink);color:var(--paper);padding:24px;overflow-x:auto;font:13px/1.8 var(--m);margin:32px 0 10px}
+code{background:var(--ink);color:var(--paper);padding:1px 5px;font-size:.88em}
+pre code{background:none;padding:0}
+.note{font-size:12px;color:var(--soft)}
+.prose{max-width:760px;font-size:17px}.prose p+p{margin-top:14px}
+.rows{border-top:2px solid var(--ink)}.rows div{display:grid;grid-template-columns:220px 1fr;gap:20px;padding:16px 0;border-bottom:1px solid var(--ink)}.rows dt{font:800 15px var(--d);text-transform:uppercase}.rows dd{margin:0}
+table{width:100%;border-collapse:collapse;border:2px solid var(--ink)}th{text-align:left;font-size:12px;text-transform:uppercase;background:var(--ink);color:var(--paper);padding:10px 14px}td{padding:14px;border-top:1px solid var(--ink);vertical-align:top}td:first-child{font:800 15px var(--d);text-transform:uppercase;white-space:nowrap}
+.scroll{overflow-x:auto}
+.ver{display:none}
+@media(max-width:720px){.head{grid-template-columns:1fr}.rows div{grid-template-columns:1fr;gap:4px}.brand span{display:none}}
+</style>
+</head>
+<body>
+<header><div class="c"><a class="brand" href="#"><i></i>Axiom</a><nav><a href="#ideas">Ideas</a><a href="#work">Work</a><a href="#contact">Contact</a></nav></div></header>
+
+<div class="hero"><div class="c">
+  <p class="tag">Independent software studio / est. on principle</p>
+  <h1>Ax<em>i</em>om</h1>
+  <p class="sub">Start from what's true. We make small tools that do one job and keep doing it for a long time.</p><div class="meta"><div>Est.<b>Axiom</b></div><div>Projects<b>02</b></div><div>Sidecars<b>00</b></div><div>Committees<b>None</b></div></div>
+</div></div>
+
+<section id="ideas"><div class="c">
+  <div class="head"><p class="tag">What we believe</p><h2>A short list of things we won't compromise on.</h2></div>
+  <div class="list">
+    <div class="p"><b>I</b><div><h3>Simple wins</h3><p>Plain beats clever. If there's an obvious way, take it.</p></div></div>
+    <div class="p"><b>II</b><div><h3>Less to break</h3><p>Each extra part is a future failure. Cut until only the essentials remain.</p></div></div>
+    <div class="p"><b>III</b><div><h3>Details are the product</h3><p>We care about the small things so the experience simply feels right.</p></div></div>
+    <div class="p"><b>IV</b><div><h3>Our own way</h3><p>Independent and opinionated. No committees, no padding.</p></div></div>
+    <div class="p"><b>V</b><div><h3>No sidecars</h3><p>Extra companion files and processes are a defect. If it can ship as one thing, it will.</p></div></div>
+    <div class="p"><b>VI</b><div><h3>Built to last</h3><p>We write code for the long haul. Maintenance matters more than novelty.</p></div></div>
+  </div>
+</div></section>
+
+<section id="work"><div class="c">
+  <div class="head"><p class="tag">Current work</p><h2>Two tools, one file each.</h2></div>
+  <div class="work">
+    <a class="w" href="jiggle.html"><div><h3>Jiggle</h3><p>Write in many languages in a single source file and get back one native program.</p></div><span>→</span></a>
+    <a class="w" href="vfsx.html"><div><h3>vfsx</h3><p>Pack a folder into a single signed archive anyone can check for tampering.</p></div><span>→</span></a>
+  </div>
+</div></section>
+
+<section id="contact"><div class="c">
+  <div class="head"><p class="tag">Contact</p><h2>Everything we do is on GitHub.</h2></div>
+  <a class="cta" href="https://github.com/axiomwtf">github.com/axiomwtf</a>
+</div></section>
+
+<footer><div class="c"><span>© Axiom</span><span>made by hand</span></div></footer>
+</body>
+</html>

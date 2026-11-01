@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>vfsx: signed folder archives</title>
+<meta name="description" content="vfsx packs a folder into one signed, content-addressed archive anyone can verify.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-1 -1 2 2'%3E%3Cpath d='M0,-1 C.05,-.28 .28,-.05 1,0 C.28,.05 .05,.28 0,1 C-.05,.28 -.28,.05 -1,0 C-.28,-.05 -.05,-.28 0,-1Z' fill='%23f2f2f2'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,600..900&family=Spline+Sans+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#efece3;--ink:#121110;--sig:#1638ff;--soft:#5d5a53;--d:"Archivo",sans-serif;--m:"Spline Sans Mono",monospace}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font:15px/1.6 var(--m);-webkit-font-smoothing:antialiased}
+::selection{background:var(--sig);color:var(--paper)}
+a{color:inherit}
+.c{max-width:1240px;margin:0 auto;padding:0 24px}
+header{position:sticky;top:0;z-index:9;background:var(--ink);color:var(--paper)}
+header .c{display:flex;justify-content:space-between;align-items:center;height:44px;gap:16px}
+.brand{font:900 18px var(--d);font-stretch:125%;text-transform:uppercase;text-decoration:none;display:flex;gap:8px;align-items:center}
+.brand i{width:12px;height:12px;background:var(--sig);clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%)}
+nav{display:flex;overflow-x:auto}nav a{font-size:12px;text-transform:uppercase;text-decoration:none;padding:0 12px;line-height:44px;white-space:nowrap}
+nav a:hover{background:var(--sig)}
+.hero{border-bottom:2px solid var(--ink);padding:40px 0 0}
+.hero>.c{width:100%}
+.tag{font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+.tag:before{content:"■ ";color:var(--sig)}
+h1{font:900 clamp(72px,19vw,280px)/.8 var(--d);font-stretch:125%;text-transform:uppercase;letter-spacing:-.05em;margin:28px 0 32px;word-break:break-word}
+h1 em{font-style:normal;color:var(--sig)}
+.sub{font:600 clamp(20px,3vw,32px)/1.2 var(--d);max-width:780px;padding-bottom:32px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border-top:2px solid var(--ink);margin:0 -24px}
+.meta div{padding:14px 24px;border-right:1px solid var(--ink);font-size:12px}.meta div:last-child{border:0}
+.meta b{display:block;font:800 22px var(--d);margin-top:4px}
+section{padding:72px 0;border-bottom:2px solid var(--ink)}
+.head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:24px;margin-bottom:40px;align-items:end}
+h2{font:800 clamp(30px,5vw,60px)/1 var(--d);letter-spacing:-.03em;text-transform:uppercase}
+.list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));border:2px solid var(--ink);background:var(--ink);gap:2px}
+.p{background:var(--paper);padding:24px;transition:background .15s,color .15s}
+.p:hover{background:var(--sig);color:var(--paper)}.p:hover p,.p:hover b{color:var(--paper)}
+.p b{font:900 56px/1 var(--d);color:var(--sig);display:block;margin-bottom:28px}
+.p h3{font:800 20px var(--d);text-transform:uppercase;margin-bottom:6px}
+.p p{color:var(--soft)}
+.work{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.w{display:flex;flex-direction:column;justify-content:space-between;min-height:320px;padding:24px;border:2px solid var(--ink);background:var(--paper);text-decoration:none;box-shadow:8px 8px 0 var(--ink);transition:transform .15s,box-shadow .15s}
+.w:hover{transform:translate(-4px,-4px);box-shadow:12px 12px 0 var(--sig)}
+.w h3{font:900 clamp(48px,7vw,96px)/.9 var(--d);text-transform:uppercase;letter-spacing:-.04em}
+.w p{margin-top:16px}
+.w span{align-self:flex-end;font:900 40px var(--d);color:var(--sig)}
+.cta{display:inline-block;font:900 clamp(26px,6vw,72px) var(--d);text-transform:uppercase;text-decoration:none;background:var(--ink);color:var(--paper);padding:12px 20px;word-break:break-all}
+.cta:hover{background:var(--sig)}
+footer{padding:20px 0;font-size:12px;text-transform:uppercase}
+footer .c{display:flex;justify-content:space-between;gap:12px}
+pre{background:var(--ink);color:var(--paper);padding:24px;overflow-x:auto;font:13px/1.8 var(--m);margin:32px 0 10px}
+code{background:var(--ink);color:var(--paper);padding:1px 5px;font-size:.88em}
+pre code{background:none;padding:0}
+.note{font-size:12px;color:var(--soft)}
+.prose{max-width:760px;font-size:17px}.prose p+p{margin-top:14px}
+.rows{border-top:2px solid var(--ink)}.rows div{display:grid;grid-template-columns:220px 1fr;gap:20px;padding:16px 0;border-bottom:1px solid var(--ink)}.rows dt{font:800 15px var(--d);text-transform:uppercase}.rows dd{margin:0}
+table{width:100%;border-collapse:collapse;border:2px solid var(--ink)}th{text-align:left;font-size:12px;text-transform:uppercase;background:var(--ink);color:var(--paper);padding:10px 14px}td{padding:14px;border-top:1px solid var(--ink);vertical-align:top}td:first-child{font:800 15px var(--d);text-transform:uppercase;white-space:nowrap}
+.scroll{overflow-x:auto}
+.ver{display:none}
+@media(max-width:720px){.head{grid-template-columns:1fr}.rows div{grid-template-columns:1fr;gap:4px}.brand span{display:none}}
+</style>
+</head>
+<body>
+<header><div class="c"><a class="brand" href="index.html"><i></i>Axiom</a><nav><a href="#overview">Overview</a><a href="#delta">Deltas</a><a href="#keys">Keys</a><a href="#cli">CLI</a><a href="#contact">Contact</a><a href="index.html">← Home</a></nav></div></header>
+<div class="hero"><div class="c"><p class="tag">An Axiom tool</p><h1>vfsx<em>.</em></h1><p class="sub">Turn a folder into one signed archive. Anyone with your public key can prove it's untouched.</p><div class="meta"><div>Spec<b>0.2.0</b></div><div>Signature<b>Ed25519</b></div><div>Output<b>1 archive</b></div><div>Written in<b>Rust</b></div></div></div></div>
+<section id="overview"><div class="c">
+  <div class="head"><p class="tag">Overview</p><h2>Backups you can actually trust.</h2></div>
+<div class="prose"><p>vfsx packs a directory into a <code>.vfsx.tar.*</code> file that carries its own Ed25519 signature, manifest and index. Checking it takes one command.</p><p><code>.vfsx</code> is part of the name, as in <code>dir.vfsx.tar.zst</code>, so you can always tell it apart from an ordinary tarball.</p></div>
+</div></section>
+<section id="format"><div class="c">
+  <div class="head"><p class="tag">Format</p><h2>Exactly one file, nothing on the side.</h2></div>
+<div class="list"><div class="p"><b>01</b><div><h3>Signed</h3><p>A single Ed25519 signature covers every byte.</p></div></div><div class="p"><b>02</b><div><h3>Indexed</h3><p>A content-addressed manifest and index allow random access and hash checks.</p></div></div><div class="p"><b>03</b><div><h3>Deduplicated</h3><p>Identical files are stored once, inside the archive.</p></div></div><div class="p"><b>04</b><div><h3>Incremental</h3><p>A delta only holds what its base doesn't.</p></div></div></div><pre>vfsx create ./project -o project.vfsx.tar.zst   # makes your key on first run
+vfsx key export -o mykey.vfsx                   # give this to others
+vfsx verify project.vfsx.tar.zst -k mykey.vfsx  # they check your archive</pre><p class="note">zstd by default; use <code>-c xz</code> or <code>-c gzip</code> instead.</p>
+</div></section>
+<section id="delta"><div class="c">
+  <div class="head"><p class="tag">Deltas</p><h2>One base, one delta.</h2></div>
+<div class="prose" style="margin-bottom:32px"><p>Files that haven't changed are referenced by hash, never copied again.</p></div><div class="scroll"><table><thead><tr><th>Step</th><th>Command</th><th>What happens</th></tr></thead><tbody><tr><td>Create a delta</td><td><code>vfsx create --base base.vfsx.tar.zst</code></td><td>The new archive points to the base by hash and stores only new or changed files.</td></tr><tr><td>Extract</td><td><code>vfsx extract delta.vfsx.tar.zst --base base.vfsx.tar.zst</code></td><td>The signed manifest records the base's hash, so the wrong base is rejected.</td></tr></tbody></table></div>
+</div></section>
+<section id="keys"><div class="c">
+  <div class="head"><p class="tag">Keys</p><h2>Your key is made the first time you sign.</h2></div>
+<div class="prose" style="margin-bottom:32px"><p>The first <code>vfsx create</code> generates an Ed25519 identity in <code>~/.config/vfsx/keys/</code>. Export the public half as a <code>.vfsx</code> file to share.</p></div><dl class="rows"><div><dt>Generate</dt><dd><code>vfsx key gen [--force]</code> creates identity.pub and identity.priv</dd></div><div><dt>Export</dt><dd><code>vfsx key export -o mykey.vfsx --owner "alice@laptop"</code> writes the public key plus details</dd></div><div><dt>Import</dt><dd><code>vfsx key import mykey.vfsx</code> trusts a key so <code>-k</code> isn't needed later</dd></div><div><dt>Verify</dt><dd><code>vfsx verify archive.vfsx.tar.zst -k mykey.vfsx</code> checks the signature and every hash</dd></div></dl>
+</div></section>
+<section id="cli"><div class="c">
+  <div class="head"><p class="tag">Command line</p><h2>Eight commands.</h2></div>
+<pre>vfsx create  [DIR] [-o OUTPUT] [-c ZSTD|XZ|GZIP] [--level N] [--base ARCHIVE] [--follow-links]
+vfsx extract ARCHIVE [-C DIR] [--force] [--base ARCHIVE] [-k KEY]
+vfsx list    ARCHIVE [--json] [--detail]
+vfsx verify  ARCHIVE [-k KEY]
+vfsx key gen [--force]
+vfsx key export [-o FILE] [--owner NAME]
+vfsx key import KEY
+vfsx key show</pre><p class="note">Defaults: current folder, zstd level 3.</p>
+</div></section>
+<section id="contact"><div class="c">
+  <div class="head"><p class="tag">Contact</p><h2>Spec, source and questions live on GitHub.</h2></div>
+<a class="cta" href="https://github.com/axiomwtf">github.com/axiomwtf</a>
+</div></section>
+
+<footer><div class="c"><span>© Axiom</span><span>vfsx 0.2.0 · Rust</span></div></footer>
+</body>
+</html>
