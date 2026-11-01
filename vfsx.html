@@ -35,7 +35,7 @@ h1 em{font-style:normal;color:var(--sig)}
 section{padding:72px 0;border-bottom:2px solid var(--ink)}
 .head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:24px;margin-bottom:40px;align-items:end}
 h2{font:800 clamp(30px,5vw,60px)/1 var(--d);letter-spacing:-.03em;text-transform:uppercase}
-.list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));border:2px solid var(--ink);background:var(--ink);gap:2px}
+.list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:2px solid var(--ink);background:var(--ink);gap:2px}
 .p{background:var(--paper);padding:24px;transition:background .15s,color .15s}
 .p:hover{background:var(--sig);color:var(--paper)}.p:hover p,.p:hover b{color:var(--paper)}
 .p b{font:900 56px/1 var(--d);color:var(--sig);display:block;margin-bottom:28px}
@@ -60,30 +60,42 @@ pre code{background:none;padding:0}
 table{width:100%;border-collapse:collapse;border:2px solid var(--ink)}th{text-align:left;font-size:12px;text-transform:uppercase;background:var(--ink);color:var(--paper);padding:10px 14px}td{padding:14px;border-top:1px solid var(--ink);vertical-align:top}td:first-child{font:800 15px var(--d);text-transform:uppercase;white-space:nowrap}
 .scroll{overflow-x:auto}
 .ver{display:none}
-@media(max-width:720px){.head{grid-template-columns:1fr}.rows div{grid-template-columns:1fr;gap:4px}.brand span{display:none}}
+@media(max-width:1000px){.list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.head{grid-template-columns:1fr}.list{grid-template-columns:1fr}.rows div{grid-template-columns:1fr;gap:4px}.brand span{display:none}}
 </style>
 </head>
 <body>
 <header><div class="c"><a class="brand" href="index.html"><i></i>Axiom</a><nav><a href="#overview">Overview</a><a href="#delta">Deltas</a><a href="#keys">Keys</a><a href="#cli">CLI</a><a href="#contact">Contact</a><a href="index.html">← Home</a></nav></div></header>
+
 <div class="hero"><div class="c"><p class="tag">An Axiom tool</p><h1>vfsx<em>.</em></h1><p class="sub">Turn a folder into one signed archive. Anyone with your public key can prove it's untouched.</p><div class="meta"><div>Spec<b>0.2.0</b></div><div>Signature<b>Ed25519</b></div><div>Output<b>1 archive</b></div><div>Written in<b>Rust</b></div></div></div></div>
+
 <section id="overview"><div class="c">
   <div class="head"><p class="tag">Overview</p><h2>Backups you can actually trust.</h2></div>
 <div class="prose"><p>vfsx packs a directory into a <code>.vfsx.tar.*</code> file that carries its own Ed25519 signature, manifest and index. Checking it takes one command.</p><p><code>.vfsx</code> is part of the name, as in <code>dir.vfsx.tar.zst</code>, so you can always tell it apart from an ordinary tarball.</p></div>
 </div></section>
+
 <section id="format"><div class="c">
   <div class="head"><p class="tag">Format</p><h2>Exactly one file, nothing on the side.</h2></div>
-<div class="list"><div class="p"><b>01</b><div><h3>Signed</h3><p>A single Ed25519 signature covers every byte.</p></div></div><div class="p"><b>02</b><div><h3>Indexed</h3><p>A content-addressed manifest and index allow random access and hash checks.</p></div></div><div class="p"><b>03</b><div><h3>Deduplicated</h3><p>Identical files are stored once, inside the archive.</p></div></div><div class="p"><b>04</b><div><h3>Incremental</h3><p>A delta only holds what its base doesn't.</p></div></div></div><pre>vfsx create ./project -o project.vfsx.tar.zst   # makes your key on first run
+  <div class="list">
+    <div class="p"><b>I</b><div><h3>Signed</h3><p>A single Ed25519 signature covers every byte.</p></div></div>
+    <div class="p"><b>II</b><div><h3>Indexed</h3><p>A content-addressed manifest and index allow random access and hash checks.</p></div></div>
+    <div class="p"><b>III</b><div><h3>Deduplicated</h3><p>Identical files are stored once, inside the archive.</p></div></div>
+    <div class="p"><b>IV</b><div><h3>Incremental</h3><p>A delta only holds what its base doesn't.</p></div></div>
+  </div><pre>vfsx create ./project -o project.vfsx.tar.zst   # makes your key on first run
 vfsx key export -o mykey.vfsx                   # give this to others
 vfsx verify project.vfsx.tar.zst -k mykey.vfsx  # they check your archive</pre><p class="note">zstd by default; use <code>-c xz</code> or <code>-c gzip</code> instead.</p>
 </div></section>
+
 <section id="delta"><div class="c">
   <div class="head"><p class="tag">Deltas</p><h2>One base, one delta.</h2></div>
 <div class="prose" style="margin-bottom:32px"><p>Files that haven't changed are referenced by hash, never copied again.</p></div><div class="scroll"><table><thead><tr><th>Step</th><th>Command</th><th>What happens</th></tr></thead><tbody><tr><td>Create a delta</td><td><code>vfsx create --base base.vfsx.tar.zst</code></td><td>The new archive points to the base by hash and stores only new or changed files.</td></tr><tr><td>Extract</td><td><code>vfsx extract delta.vfsx.tar.zst --base base.vfsx.tar.zst</code></td><td>The signed manifest records the base's hash, so the wrong base is rejected.</td></tr></tbody></table></div>
 </div></section>
+
 <section id="keys"><div class="c">
   <div class="head"><p class="tag">Keys</p><h2>Your key is made the first time you sign.</h2></div>
 <div class="prose" style="margin-bottom:32px"><p>The first <code>vfsx create</code> generates an Ed25519 identity in <code>~/.config/vfsx/keys/</code>. Export the public half as a <code>.vfsx</code> file to share.</p></div><dl class="rows"><div><dt>Generate</dt><dd><code>vfsx key gen [--force]</code> creates identity.pub and identity.priv</dd></div><div><dt>Export</dt><dd><code>vfsx key export -o mykey.vfsx --owner "alice@laptop"</code> writes the public key plus details</dd></div><div><dt>Import</dt><dd><code>vfsx key import mykey.vfsx</code> trusts a key so <code>-k</code> isn't needed later</dd></div><div><dt>Verify</dt><dd><code>vfsx verify archive.vfsx.tar.zst -k mykey.vfsx</code> checks the signature and every hash</dd></div></dl>
 </div></section>
+
 <section id="cli"><div class="c">
   <div class="head"><p class="tag">Command line</p><h2>Eight commands.</h2></div>
 <pre>vfsx create  [DIR] [-o OUTPUT] [-c ZSTD|XZ|GZIP] [--level N] [--base ARCHIVE] [--follow-links]
@@ -95,6 +107,7 @@ vfsx key export [-o FILE] [--owner NAME]
 vfsx key import KEY
 vfsx key show</pre><p class="note">Defaults: current folder, zstd level 3.</p>
 </div></section>
+
 <section id="contact"><div class="c">
   <div class="head"><p class="tag">Contact</p><h2>Spec, source and questions live on GitHub.</h2></div>
 <a class="cta" href="https://github.com/axiomwtf">github.com/axiomwtf</a>

@@ -35,7 +35,7 @@ h1 em{font-style:normal;color:var(--sig)}
 section{padding:72px 0;border-bottom:2px solid var(--ink)}
 .head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:24px;margin-bottom:40px;align-items:end}
 h2{font:800 clamp(30px,5vw,60px)/1 var(--d);letter-spacing:-.03em;text-transform:uppercase}
-.list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));border:2px solid var(--ink);background:var(--ink);gap:2px}
+.list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:2px solid var(--ink);background:var(--ink);gap:2px}
 .p{background:var(--paper);padding:24px;transition:background .15s,color .15s}
 .p:hover{background:var(--sig);color:var(--paper)}.p:hover p,.p:hover b{color:var(--paper)}
 .p b{font:900 56px/1 var(--d);color:var(--sig);display:block;margin-bottom:28px}
@@ -60,7 +60,7 @@ pre code{background:none;padding:0}
 table{width:100%;border-collapse:collapse;border:2px solid var(--ink)}th{text-align:left;font-size:12px;text-transform:uppercase;background:var(--ink);color:var(--paper);padding:10px 14px}td{padding:14px;border-top:1px solid var(--ink);vertical-align:top}td:first-child{font:800 15px var(--d);text-transform:uppercase;white-space:nowrap}
 .scroll{overflow-x:auto}
 .ver{display:none}
-@media(max-width:720px){.head{grid-template-columns:1fr}.rows div{grid-template-columns:1fr;gap:4px}.brand span{display:none}}
+@media(max-width:720px){.head{grid-template-columns:1fr}.list{grid-template-columns:1fr}.rows div{grid-template-columns:1fr;gap:4px}.brand span{display:none}}
 </style>
 </head>
 <body>

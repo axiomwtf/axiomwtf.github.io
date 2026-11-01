@@ -35,7 +35,7 @@ h1 em{font-style:normal;color:var(--sig)}
 section{padding:72px 0;border-bottom:2px solid var(--ink)}
 .head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:24px;margin-bottom:40px;align-items:end}
 h2{font:800 clamp(30px,5vw,60px)/1 var(--d);letter-spacing:-.03em;text-transform:uppercase}
-.list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));border:2px solid var(--ink);background:var(--ink);gap:2px}
+.list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:2px solid var(--ink);background:var(--ink);gap:2px}
 .p{background:var(--paper);padding:24px;transition:background .15s,color .15s}
 .p:hover{background:var(--sig);color:var(--paper)}.p:hover p,.p:hover b{color:var(--paper)}
 .p b{font:900 56px/1 var(--d);color:var(--sig);display:block;margin-bottom:28px}
@@ -60,20 +60,30 @@ pre code{background:none;padding:0}
 table{width:100%;border-collapse:collapse;border:2px solid var(--ink)}th{text-align:left;font-size:12px;text-transform:uppercase;background:var(--ink);color:var(--paper);padding:10px 14px}td{padding:14px;border-top:1px solid var(--ink);vertical-align:top}td:first-child{font:800 15px var(--d);text-transform:uppercase;white-space:nowrap}
 .scroll{overflow-x:auto}
 .ver{display:none}
-@media(max-width:720px){.head{grid-template-columns:1fr}.rows div{grid-template-columns:1fr;gap:4px}.brand span{display:none}}
+@media(max-width:1000px){.list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.head{grid-template-columns:1fr}.list{grid-template-columns:1fr}.rows div{grid-template-columns:1fr;gap:4px}.brand span{display:none}}
 </style>
 </head>
 <body>
 <header><div class="c"><a class="brand" href="index.html"><i></i>Axiom</a><nav><a href="#overview">Overview</a><a href="#syntax">Syntax</a><a href="#languages">Languages</a><a href="#contact">Contact</a><a href="index.html">← Home</a></nav></div></header>
+
 <div class="hero"><div class="c"><p class="tag">An Axiom tool</p><h1>Jiggle<em>.</em></h1><p class="sub">Put Rust, JavaScript, Python and more side by side in one file. Get one native executable back.</p><div class="meta"><div>Spec<b>0.2.1</b></div><div>Input<b>1 .jgl</b></div><div>Output<b>1 binary</b></div><div>Written in<b>Rust</b></div></div></div></div>
+
 <section id="overview"><div class="c">
   <div class="head"><p class="tag">Overview</p><h2>No build config to babysit.</h2></div>
 <div class="prose"><p>A <code>project.jgl</code> file contains code blocks in different languages. The compiler, <code>jglc</code>, unpacks them, bundles them as <code>.tar.xz</code>, writes a <code>build.sh</code> for you and produces a single executable.</p><p>You never maintain a Makefile, CMake, Gradle or package.json script.</p></div>
 </div></section>
+
 <section id="output"><div class="c">
   <div class="head"><p class="tag">Output</p><h2>The result is always one file.</h2></div>
-<div class="list"><div class="p"><b>01</b><div><h3>Single executable</h3><p>Every language payload is embedded as data, so the output is just <code>jgl_binary</code> (or <code>.exe</code> on Windows).</p></div></div><div class="p"><b>02</b><div><h3>Runtimes stated up front</h3><p>JVM, .NET and CPython can't be linked in. The program checks for them on launch and tells you what's missing.</p></div></div><div class="p"><b>03</b><div><h3>All or nothing</h3><p>If one executable can't be produced, <code>jglc</code> stops with an error. No half-built output.</p></div></div><div class="p"><b>04</b><div><h3>Dependencies in one place</h3><p>One <code>dep[lang]</code> block per language. Jiggle writes each ecosystem's own dependency file.</p></div></div></div>
+  <div class="list">
+    <div class="p"><b>I</b><div><h3>Single executable</h3><p>Every language payload is embedded as data, so the output is just <code>jgl_binary</code> (or <code>.exe</code> on Windows).</p></div></div>
+    <div class="p"><b>II</b><div><h3>Runtimes stated up front</h3><p>JVM, .NET and CPython can't be linked in. The program checks for them on launch and tells you what's missing.</p></div></div>
+    <div class="p"><b>III</b><div><h3>All or nothing</h3><p>If one executable can't be produced, <code>jglc</code> stops with an error. No half-built output.</p></div></div>
+    <div class="p"><b>IV</b><div><h3>Dependencies in one place</h3><p>One <code>dep[lang]</code> block per language. Jiggle writes each ecosystem's own dependency file.</p></div></div>
+  </div>
 </div></section>
+
 <section id="syntax"><div class="c">
   <div class="head"><p class="tag">Syntax</p><h2>Write blocks, skip the build scripts.</h2></div>
 <div class="prose"><p>A block is a header followed by <code>{ }</code>. Named blocks keep their name; unnamed ones are numbered automatically (<code>v1.lua</code>, <code>v2.lua</code>).</p></div><pre>project._jgl {
@@ -95,6 +105,7 @@ server._js {
     print("no name, saved as v1.lua")
 }</pre><p class="note"><code>project._jgl</code> is the manifest and the only ._jgl block the compiler reads.</p>
 </div></section>
+
 <section id="pipeline"><div class="c">
   <div class="head"><p class="tag">Pipeline</p><h2>What happens when you compile.</h2></div>
 <pre>project.jgl
@@ -107,6 +118,7 @@ server._js {
   → write build.sh
   → compile to jgl_binary</pre><dl class="rows"><div><dt>Linker</dt><dd>Rust links when it's present; otherwise clang or gcc.</dd></div><div><dt>Windows</dt><dd><code>--target-win</code> builds <code>jgl_binary.exe</code> using <code>x86_64-pc-windows-gnu</code>.</dd></div><div><dt>build.sh</dt><dd>Extracts, restores dependencies, compiles each language and links. <code>--r</code> gives a release build (<code>-O3 -s</code>); debug is the default (<code>-O0 -g</code>). It copies the result to the project root and removes <code>jgl_build/</code>.</dd></div></dl>
 </div></section>
+
 <section id="cli"><div class="c">
   <div class="head"><p class="tag">Command line</p><h2>Four commands.</h2></div>
 <pre>jglc compile  [--project &lt;file&gt;] [--output &lt;dir&gt;] [--bundle-only] [--target-win]
@@ -115,14 +127,17 @@ jglc generate [--project &lt;file&gt;] [--output &lt;dir&gt;] [--target-win]
 
 # shortcuts: build = compile · check = validate · gen = generate</pre><p class="note">Defaults: project.jgl in, current folder out.</p>
 </div></section>
+
 <section id="languages"><div class="c">
   <div class="head"><p class="tag">Languages</p><h2>What it can build today.</h2></div>
 <div class="scroll"><table><thead><tr><th>Kind</th><th>Languages</th><th>Handling</th></tr></thead><tbody><tr><td>Native</td><td>Rust, C, C++, Go, Zig, Nim, Fortran</td><td>Built with each native toolchain, then linked.</td></tr><tr><td>Embedded</td><td>JavaScript, TypeScript, JSX, TSX, Python, Lua, Ruby, PHP, Shell, BrightScript</td><td>TypeScript becomes JS at build time (bun or tsc). The rest are stored as data and run from the executable. BrightScript targets Roku only.</td></tr><tr><td>JVM / .NET</td><td>Java, Kotlin, Scala, C#</td><td>Built into a JAR or DLL and embedded; the runtime is listed as a requirement.</td></tr><tr><td>Static</td><td>Markdown, AsciiDoc</td><td>Stored as plain text.</td></tr><tr><td>Custom</td><td>Your own, in the manifest</td><td>Built with the command in a <code>._sh</code> block.</td></tr></tbody></table></div><p class="note" style="margin-top:16px">sh, md, adoc and bs have no package ecosystem, so they can't use dep[lang].</p>
 </div></section>
+
 <section id="rules"><div class="c">
   <div class="head"><p class="tag">Rules</p><h2>Edge cases, settled.</h2></div>
 <dl class="rows"><div><dt>Same named block twice</dt><dd>Compiler error. Fix it in the manifest.</dd></div><div><dt>Unnamed blocks</dt><dd>Numbered across files; they never clash.</dd></div><div><dt>Same dependency twice</dt><dd>Same version is merged. Different versions is an error.</dd></div><div><dt>Custom languages</dt><dd>Require a <code>dep.&lt;file&gt;</code> block, even if empty. Built-in extensions are reserved.</dd></div><div><dt>Manifest only</dt><dd><code>dep[lang]</code> anywhere but <code>project._jgl</code> fails to parse.</dd></div></dl>
 </div></section>
+
 <section id="contact"><div class="c">
   <div class="head"><p class="tag">Contact</p><h2>Spec, source and questions live on GitHub.</h2></div>
 <a class="cta" href="https://github.com/axiomwtf">github.com/axiomwtf</a>
