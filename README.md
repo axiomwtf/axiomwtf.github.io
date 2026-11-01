@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./axiom.svg" alt="Axiom" width="320">
+</p>
+
 # Axiom
 
 Source for [axiomwtf.github.io](https://axiomwtf.github.io) — the website of Axiom, an
