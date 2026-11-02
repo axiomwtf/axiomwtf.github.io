@@ -11,7 +11,7 @@
 <style>
 :root{--paper:#efece3;--ink:#121110;--sig:#1638ff;--soft:#5d5a53;--d:"Archivo",sans-serif;--m:"Spline Sans Mono",monospace}
 *{box-sizing:border-box;margin:0}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;scroll-padding-top:68px}
 body{background:var(--paper);color:var(--ink);font:15px/1.6 var(--m);-webkit-font-smoothing:antialiased}
 ::selection{background:var(--sig);color:var(--paper)}
 a{color:inherit}
@@ -24,30 +24,30 @@ nav{display:flex;overflow-x:auto}nav a{font-size:12px;text-transform:uppercase;t
 nav a:hover{background:var(--sig)}
 .hero{border-bottom:2px solid var(--ink);padding:40px 0 0}
 .hero>.c{width:100%}
-.tag{font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+.tag{font-size:12px;text-transform:uppercase;letter-spacing:0}
 .tag:before{content:"■ ";color:var(--sig)}
-h1{font:900 clamp(72px,19vw,280px)/.8 var(--d);font-stretch:125%;text-transform:uppercase;letter-spacing:-.05em;margin:28px 0 32px;word-break:break-word}
+h1{font:900 160px/.9 var(--d);font-stretch:125%;text-transform:uppercase;letter-spacing:0;margin:28px 0 32px;overflow-wrap:anywhere}
 h1 em{font-style:normal;color:var(--sig)}
-.sub{font:600 clamp(20px,3vw,32px)/1.2 var(--d);max-width:780px;padding-bottom:32px}
-.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border-top:2px solid var(--ink);margin:0 -24px}
+.sub{font:600 32px/1.2 var(--d);max-width:780px;padding-bottom:32px}
+.meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:2px solid var(--ink);margin:0 -24px}
 .meta div{padding:14px 24px;border-right:1px solid var(--ink);font-size:12px}.meta div:last-child{border:0}
 .meta b{display:block;font:800 22px var(--d);margin-top:4px}
 section{padding:72px 0;border-bottom:2px solid var(--ink)}
 .head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:24px;margin-bottom:40px;align-items:end}
-h2{font:800 clamp(30px,5vw,60px)/1 var(--d);letter-spacing:-.03em;text-transform:uppercase}
+h2{font:800 52px/1.05 var(--d);letter-spacing:0;text-transform:uppercase}
 .list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:2px solid var(--ink);background:var(--ink);gap:2px}
 .p{background:var(--paper);padding:24px;transition:background .15s,color .15s}
 .p:hover{background:var(--sig);color:var(--paper)}.p:hover p,.p:hover b{color:var(--paper)}
 .p b{font:900 56px/1 var(--d);color:var(--sig);display:block;margin-bottom:28px}
 .p h3{font:800 20px var(--d);text-transform:uppercase;margin-bottom:6px}
 .p p{color:var(--soft)}
-.work{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.work{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
 .w{display:flex;flex-direction:column;justify-content:space-between;min-height:320px;padding:24px;border:2px solid var(--ink);background:var(--paper);text-decoration:none;box-shadow:8px 8px 0 var(--ink);transition:transform .15s,box-shadow .15s}
 .w:hover{transform:translate(-4px,-4px);box-shadow:12px 12px 0 var(--sig)}
-.w h3{font:900 clamp(48px,7vw,96px)/.9 var(--d);text-transform:uppercase;letter-spacing:-.04em}
+.w h3{font:900 80px/.95 var(--d);text-transform:uppercase;letter-spacing:0}
 .w p{margin-top:16px}
 .w span{align-self:flex-end;font:900 40px var(--d);color:var(--sig)}
-.cta{display:inline-block;font:900 clamp(26px,6vw,72px) var(--d);text-transform:uppercase;text-decoration:none;background:var(--ink);color:var(--paper);padding:12px 20px;word-break:break-all}
+.cta{display:inline-block;font:900 40px var(--d);text-transform:uppercase;text-decoration:none;background:var(--ink);color:var(--paper);padding:12px 20px;overflow-wrap:anywhere;max-width:100%}
 .cta:hover{background:var(--sig)}
 footer{padding:20px 0;font-size:12px;text-transform:uppercase}
 footer .c{display:flex;justify-content:space-between;gap:12px}
@@ -62,20 +62,71 @@ table{width:100%;border-collapse:collapse;border:2px solid var(--ink)}th{text-al
 .ver{display:none}
 @media(max-width:1000px){.list{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:720px){.head{grid-template-columns:1fr}.list{grid-template-columns:1fr}.rows div{grid-template-columns:1fr;gap:4px}.brand span{display:none}}
+
+/* Keep document content inside its grid track; scroll only code blocks. */
+.brand{flex-shrink:0}
+nav{min-width:0}
+a:focus-visible{outline:3px solid var(--sig);outline-offset:4px}
+.head>* , .p, .w, .meta div, .rows dd{min-width:0}
+.p p, .prose, .rows dd{overflow-wrap:anywhere}
+.p:hover code{background:var(--paper);color:var(--ink)}
+.meta div{border-bottom:0}
+pre{max-width:100%;overscroll-behavior-x:contain}
+.scroll{max-width:100%;overscroll-behavior-x:contain}
+table{table-layout:fixed}
+th,td{overflow-wrap:anywhere}
+td:first-child{white-space:normal;width:22%}
+td code{white-space:normal;box-decoration-break:clone}
+section{scroll-margin-top:16px}
+@media(min-width:721px) and (max-width:1100px){
+ h1{font-size:120px}h2{font-size:40px}.w h3{font-size:64px}
+ .list{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:720px){
+ html{scroll-padding-top:108px}
+ .c{padding:0 20px}
+ header .c{height:auto;min-height:44px;flex-wrap:wrap;gap:0;padding-top:10px}
+ nav{width:100%;margin-top:6px;scrollbar-width:thin}
+ nav a{padding:0 10px;line-height:40px}
+ nav a:first-child{padding-left:0}
+ .hero{padding-top:28px}
+ h1{font-size:80px;margin:24px 0;word-break:normal;white-space:nowrap}
+ h2{font-size:32px}
+ .sub{font-size:24px}
+ .meta{grid-template-columns:repeat(2,minmax(0,1fr));margin:0 -20px}
+ .meta div{padding:14px 20px}
+ .meta div:nth-child(2){border-right:0}
+ .meta div:nth-child(-n+2){border-bottom:1px solid var(--ink)}
+ section{padding:44px 0}
+ .head{gap:16px;margin-bottom:28px}
+ .work{grid-template-columns:minmax(0,1fr)}
+ .w{min-height:260px}.w h3{font-size:64px}
+ .cta{font-size:24px;padding:12px}
+ .prose{font-size:15px}
+ pre{padding:20px;font-size:12px}
+ th,td{padding:10px;font-size:12px}
+ footer .c{flex-wrap:wrap}
+}
+@media(max-width:400px){h1{font-size:52px}.sub{font-size:22px}.w h3{font-size:52px}.cta{font-size:20px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 </style>
+<meta property="og:title" content="Jiggle: many languages, one program">
+<meta property="og:description" content="Jiggle compiles a single multi-language source file into one native program.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
 </head>
 <body>
 <header><div class="c"><a class="brand" href="index.html"><i></i>Axiom</a><nav><a href="#overview">Overview</a><a href="#syntax">Syntax</a><a href="#languages">Languages</a><a href="#contact">Contact</a><a href="index.html">← Home</a></nav></div></header>
 
-<div class="hero"><div class="c"><p class="tag">An Axiom tool</p><h1>Jiggle<em>.</em></h1><p class="sub">Put Rust, JavaScript, Python and more side by side in one file. Get one native executable back.</p><div class="meta"><div>Spec<b>0.2.1</b></div><div>Input<b>1 .jgl</b></div><div>Output<b>1 binary</b></div><div>Written in<b>Rust</b></div></div></div></div>
+<div class="hero"><div class="c"><h1>Jiggle<em>.</em></h1><div class="meta"><div>Spec<b>0.2.1</b></div><div>Input<b>1 .jgl</b></div><div>Output<b>1 binary</b></div><div>Written in<b>Rust</b></div></div></div></div>
 
 <section id="overview"><div class="c">
-  <div class="head"><p class="tag">Overview</p><h2>No build config to babysit.</h2></div>
+  <div class="head"><h2>No build config to babysit.</h2></div>
 <div class="prose"><p>A <code>project.jgl</code> file contains code blocks in different languages. The compiler, <code>jglc</code>, unpacks them, bundles them as <code>.tar.xz</code>, writes a <code>build.sh</code> for you and produces a single executable.</p><p>You never maintain a Makefile, CMake, Gradle or package.json script.</p></div>
 </div></section>
 
 <section id="output"><div class="c">
-  <div class="head"><p class="tag">Output</p><h2>The result is always one file.</h2></div>
+  <div class="head"><h2>The result is always one file.</h2></div>
   <div class="list">
     <div class="p"><b>I</b><div><h3>Single executable</h3><p>Every language payload is embedded as data, so the output is just <code>jgl_binary</code> (or <code>.exe</code> on Windows).</p></div></div>
     <div class="p"><b>II</b><div><h3>Runtimes stated up front</h3><p>JVM, .NET and CPython can't be linked in. The program checks for them on launch and tells you what's missing.</p></div></div>
@@ -85,7 +136,7 @@ table{width:100%;border-collapse:collapse;border:2px solid var(--ink)}th{text-al
 </div></section>
 
 <section id="syntax"><div class="c">
-  <div class="head"><p class="tag">Syntax</p><h2>Write blocks, skip the build scripts.</h2></div>
+  <div class="head"><h2>Write blocks, skip the build scripts.</h2></div>
 <div class="prose"><p>A block is a header followed by <code>{ }</code>. Named blocks keep their name; unnamed ones are numbered automatically (<code>v1.lua</code>, <code>v2.lua</code>).</p></div><pre>project._jgl {
     target cross
     dep[rs] { serde = "1.0" }
@@ -107,7 +158,7 @@ server._js {
 </div></section>
 
 <section id="pipeline"><div class="c">
-  <div class="head"><p class="tag">Pipeline</p><h2>What happens when you compile.</h2></div>
+  <div class="head"><h2>What happens when you compile.</h2></div>
 <pre>project.jgl
   → read manifest, resolve imports depth-first
   → parse blocks
@@ -120,7 +171,7 @@ server._js {
 </div></section>
 
 <section id="cli"><div class="c">
-  <div class="head"><p class="tag">Command line</p><h2>Four commands.</h2></div>
+  <div class="head"><h2>Four commands.</h2></div>
 <pre>jglc compile  [--project &lt;file&gt;] [--output &lt;dir&gt;] [--bundle-only] [--target-win]
 jglc validate [--project &lt;file&gt;]
 jglc generate [--project &lt;file&gt;] [--output &lt;dir&gt;] [--target-win]
@@ -129,17 +180,17 @@ jglc generate [--project &lt;file&gt;] [--output &lt;dir&gt;] [--target-win]
 </div></section>
 
 <section id="languages"><div class="c">
-  <div class="head"><p class="tag">Languages</p><h2>What it can build today.</h2></div>
+  <div class="head"><h2>What it can build today.</h2></div>
 <div class="scroll"><table><thead><tr><th>Kind</th><th>Languages</th><th>Handling</th></tr></thead><tbody><tr><td>Native</td><td>Rust, C, C++, Go, Zig, Nim, Fortran</td><td>Built with each native toolchain, then linked.</td></tr><tr><td>Embedded</td><td>JavaScript, TypeScript, JSX, TSX, Python, Lua, Ruby, PHP, Shell, BrightScript</td><td>TypeScript becomes JS at build time (bun or tsc). The rest are stored as data and run from the executable. BrightScript targets Roku only.</td></tr><tr><td>JVM / .NET</td><td>Java, Kotlin, Scala, C#</td><td>Built into a JAR or DLL and embedded; the runtime is listed as a requirement.</td></tr><tr><td>Static</td><td>Markdown, AsciiDoc</td><td>Stored as plain text.</td></tr><tr><td>Custom</td><td>Your own, in the manifest</td><td>Built with the command in a <code>._sh</code> block.</td></tr></tbody></table></div><p class="note" style="margin-top:16px">sh, md, adoc and bs have no package ecosystem, so they can't use dep[lang].</p>
 </div></section>
 
 <section id="rules"><div class="c">
-  <div class="head"><p class="tag">Rules</p><h2>Edge cases, settled.</h2></div>
+  <div class="head"><h2>Edge cases, settled.</h2></div>
 <dl class="rows"><div><dt>Same named block twice</dt><dd>Compiler error. Fix it in the manifest.</dd></div><div><dt>Unnamed blocks</dt><dd>Numbered across files; they never clash.</dd></div><div><dt>Same dependency twice</dt><dd>Same version is merged. Different versions is an error.</dd></div><div><dt>Custom languages</dt><dd>Require a <code>dep.&lt;file&gt;</code> block, even if empty. Built-in extensions are reserved.</dd></div><div><dt>Manifest only</dt><dd><code>dep[lang]</code> anywhere but <code>project._jgl</code> fails to parse.</dd></div></dl>
 </div></section>
 
 <section id="contact"><div class="c">
-  <div class="head"><p class="tag">Contact</p><h2>Spec, source and questions live on GitHub.</h2></div>
+  <div class="head"><h2>Spec, source and questions live on GitHub.</h2></div>
 <a class="cta" href="https://github.com/axiomwtf">github.com/axiomwtf</a>
 </div></section>
 
