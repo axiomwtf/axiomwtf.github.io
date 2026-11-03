@@ -159,6 +159,7 @@ footer .c{display:flex;justify-content:space-between;gap:12px}
       <p>Poly will replace <a href="jiggle.html">Jiggle</a>, which is going to be deprecated.</p>
       <p>Nothing is released yet. This page describes the 0.1 draft spec.</p>
     </div>
+    <div style="margin-top:40px"><a class="cta" href="polyspec.md" target="_blank" rel="noopener">Read the spec!</a></div>
   </div>
 </section>
 
@@ -255,12 +256,19 @@ poly clean</pre>
   <div class="c">
     <div class="head"><h2>Signed by default.</h2></div>
     <div class="prose">
-      <p>Poly packages are <a href="vfsx.html">vfsx</a> archives, like <code>my-app-1.0.0.vfsx.tar.zst</code>. Each one holds a manifest with signatures, the source, optional prebuilt binaries per platform and the lock file. Downloads are verified before they're extracted, and published packages are signed automatically.</p>
+      <p>A Poly package is one <a href="vfsx.html">vfsx</a> archive, like <code>my-app-1.0.0.vfsx.tar.zst</code>. It holds the source, the lock file, a signed manifest, and one executable per platform. Each executable contains every language the package uses, so there are no per-language binaries to install.</p>
+      <p>Downloads are verified before they're extracted, and published packages are signed automatically.</p>
     </div>
+<pre>[vfsx]
+sign = true
+keyfile = ~/.poly/private.pem
+verify = true
+trustStore = ~/.poly/trust/</pre>
 <pre>poly sign
 poly verify
 poly trust add axiomwtf
 poly trust list
+poly trust remove &lt;key&gt;
 poly publish</pre>
   </div>
 </section>
