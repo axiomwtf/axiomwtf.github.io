@@ -4,14 +4,14 @@
 
 # Axiom
 
-Source for [axiomwtf.github.io](https://axiomwtf.github.io) — the website of Axiom, an
+Source for [axiomwtf.github.io](https://axiomwtf.github.io),the website of us, a
 independent software studio making small, plain, dependable tools.
 
 ## Pages
 
-- `index.html` — studio home: principles, current work, contact.
-- `jiggle.html` — Jiggle: many languages, one program.
-- `vfsx.html` — vfsx: signed folder archives.
+- `index.html` - studio home: principles, current work, contact.
+- `jiggle.html` - Jiggle: many languages, one program.
+- `vfsx.html` - vfsx: signed folder archives.
 
 ## Conventions
 
@@ -30,12 +30,6 @@ Open any page in a browser, or serve the folder:
 
     python3 -m http.server
 
-## Tools
-
-- **Jiggle** (spec 0.2.1) — compile a single `.jgl` source file containing Rust,
-  JavaScript, Python and more into one native executable.
-- **vfsx** (spec 0.2.0) — pack a folder into one signed, content-addressed
-  archive (Ed25519) anyone can verify.
 
 ## Contact
 
