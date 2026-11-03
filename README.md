@@ -4,7 +4,7 @@
 
 # Axiom
 
-Source for [axiomwtf.github.io](https://axiomwtf.github.io),the website of us, a
+Source for [axiomwtf.github.io](https://axiomwtf.github.io), the website of us, a
 independent software studio making small, plain, dependable tools.
 
 ## Pages
