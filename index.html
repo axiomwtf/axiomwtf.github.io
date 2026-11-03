@@ -27,7 +27,7 @@ header{position:sticky;top:0;z-index:9;background:var(--ink);color:var(--paper)}
 header .c{display:flex;justify-content:space-between;align-items:center;height:44px;gap:16px}
 .brand{font:900 18px var(--d);font-stretch:125%;text-transform:uppercase;text-decoration:none;display:flex;gap:8px;align-items:center;flex-shrink:0}
 .brand i{width:12px;height:12px;background:var(--sig);clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%)}
-nav{display:flex;overflow-x:auto;min-width:0}
+nav{display:flex;overflow-x:auto;min-width:0;scrollbar-width:none}
 nav a{font-size:12px;text-transform:uppercase;text-decoration:none;padding:0 12px;line-height:44px;white-space:nowrap}
 nav a:hover{background:var(--sig)}
 
@@ -58,6 +58,7 @@ h2{font:800 52px/1.05 var(--d);text-transform:uppercase}
 .w h3{font:900 80px/.95 var(--d);text-transform:uppercase}
 .w p{margin-top:16px}
 .w span{align-self:flex-end;font:900 40px var(--d);color:var(--sig)}
+.w.soon{grid-column:1/-1;min-height:220px}
 
 .cta{display:inline-block;font:900 40px var(--d);text-transform:uppercase;text-decoration:none;background:var(--ink);color:var(--paper);padding:12px 20px;overflow-wrap:anywhere;max-width:100%}
 .cta:hover{background:var(--sig)}
@@ -154,7 +155,7 @@ footer .c{display:flex;justify-content:space-between;gap:12px}
       <a class="w" href="jiggle.html">
         <div>
           <h3>Jiggle</h3>
-          <p>Put code in several languages into one source file and get a single native program out.</p>
+          <p>Put code in several languages into one source file and get a single native program out. Will be deprecated in favor of Poly.</p>
         </div>
         <span>→</span>
       </a>
@@ -162,6 +163,13 @@ footer .c{display:flex;justify-content:space-between;gap:12px}
         <div>
           <h3>vfsx</h3>
           <p>Pack a folder into one signed archive that anyone can check for tampering.</p>
+        </div>
+        <span>→</span>
+      </a>
+      <a class="w soon" href="poly.html">
+        <div>
+          <h3>Poly</h3>
+          <p>Planned: one build system and package manager for Rust, C/C++ and Go, with signed packages. It will take over from Jiggle.</p>
         </div>
         <span>→</span>
       </a>
@@ -179,7 +187,7 @@ footer .c{display:flex;justify-content:space-between;gap:12px}
 <footer>
   <div class="c">
     <span>© Axiom</span>
-    <span>Hosted on GitHub Pages</span>
+    <span>Est. 2026</span>
   </div>
 </footer>
 </body>

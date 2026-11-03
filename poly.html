@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Poly: one build system for Rust, C/C++ and Go</title>
+<meta name="description" content="Poly is a planned build system and package manager for Rust, C/C++ and Go, with one manifest, one lock file and signed packages.">
+<meta property="og:title" content="Poly: one build system for Rust, C/C++ and Go">
+<meta property="og:description" content="Poly is a planned build system and package manager for Rust, C/C++ and Go, with one manifest, one lock file and signed packages.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-1 -1 2 2'%3E%3Cpath d='M0,-1 C.05,-.28 .28,-.05 1,0 C.28,.05 .05,.28 0,1 C-.05,.28 -.28,.05 -1,0 C-.28,-.05 -.05,-.28 0,-1Z' fill='%23f2f2f2'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,600..900&family=Spline+Sans+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#efece3;--ink:#121110;--sig:#1638ff;--soft:#5d5a53;--d:"Archivo",sans-serif;--m:"Spline Sans Mono",monospace}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:68px}
+body{background:var(--paper);color:var(--ink);font:15px/1.6 var(--m);-webkit-font-smoothing:antialiased}
+::selection{background:var(--sig);color:var(--paper)}
+a{color:inherit}
+a:focus-visible{outline:3px solid var(--sig);outline-offset:4px}
+.c{max-width:1240px;margin:0 auto;padding:0 24px}
+
+header{position:sticky;top:0;z-index:9;background:var(--ink);color:var(--paper)}
+header .c{display:flex;justify-content:space-between;align-items:center;height:44px;gap:16px}
+.brand{font:900 18px var(--d);font-stretch:125%;text-transform:uppercase;text-decoration:none;display:flex;gap:8px;align-items:center;flex-shrink:0}
+.brand i{width:12px;height:12px;background:var(--sig);clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%)}
+nav{display:flex;overflow-x:auto;min-width:0;scrollbar-width:none}
+nav a{font-size:12px;text-transform:uppercase;text-decoration:none;padding:0 12px;line-height:44px;white-space:nowrap}
+nav a:hover{background:var(--sig)}
+
+.hero{border-bottom:2px solid var(--ink);padding:40px 0 0}
+h1{font:900 160px/.9 var(--d);font-stretch:125%;text-transform:uppercase;margin:28px 0 32px;overflow-wrap:anywhere}
+h1 em{font-style:normal;color:var(--sig)}
+.meta{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border:2px solid var(--ink);border-bottom:0}
+.meta div{padding:14px 24px;border-right:1px solid var(--ink);font-size:12px}
+.meta div:last-child{border:0}
+.meta b{display:block;font:800 22px var(--d);margin-top:4px;overflow-wrap:anywhere}
+
+section{padding:72px 0;border-bottom:2px solid var(--ink);scroll-margin-top:16px}
+.head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:24px;margin-bottom:40px;align-items:end}
+.head>*,.p,.meta div{min-width:0}
+h2{font:800 52px/1.05 var(--d);text-transform:uppercase}
+
+.list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:2px solid var(--ink);background:var(--ink);gap:2px}
+.p{background:var(--paper);padding:24px;transition:background .15s,color .15s}
+.p:hover{background:var(--sig);color:var(--paper)}
+.p:hover p,.p:hover b{color:var(--paper)}
+.p:hover code{background:var(--paper);color:var(--ink)}
+.p b{font:900 56px/1 var(--d);color:var(--sig);display:block;margin-bottom:28px}
+.p h3{font:800 20px var(--d);text-transform:uppercase;margin-bottom:6px}
+.p p{color:var(--soft);overflow-wrap:anywhere}
+
+.prose{max-width:760px;font-size:17px;overflow-wrap:anywhere}
+.prose p+p{margin-top:14px}
+.note{font-size:12px;color:var(--soft)}
+pre{background:var(--ink);color:var(--paper);padding:24px;overflow-x:auto;max-width:100%;overscroll-behavior-x:contain;font:13px/1.8 var(--m);margin:32px 0 10px}
+code{background:var(--ink);color:var(--paper);padding:1px 5px;font-size:.88em}
+pre code{background:none;padding:0}
+
+.rows{border-top:2px solid var(--ink)}
+.rows div{display:grid;grid-template-columns:220px 1fr;gap:20px;padding:16px 0;border-bottom:1px solid var(--ink)}
+.rows dt{font:800 15px var(--d);text-transform:uppercase}
+.rows dd{min-width:0;overflow-wrap:anywhere}
+
+.scroll{overflow-x:auto;max-width:100%;overscroll-behavior-x:contain}
+table{width:100%;border-collapse:collapse;border:2px solid var(--ink);table-layout:fixed}
+th{text-align:left;font-size:12px;text-transform:uppercase;background:var(--ink);color:var(--paper);padding:10px 14px}
+td{padding:14px;border-top:1px solid var(--ink);vertical-align:top}
+th,td{overflow-wrap:anywhere}
+td:first-child{font:800 15px var(--d);text-transform:uppercase;width:22%}
+td code{white-space:normal;box-decoration-break:clone}
+
+.cta{display:inline-block;font:900 40px var(--d);text-transform:uppercase;text-decoration:none;background:var(--ink);color:var(--paper);padding:12px 20px;overflow-wrap:anywhere;max-width:100%}
+.cta:hover{background:var(--sig)}
+
+footer{padding:20px 0;font-size:12px;text-transform:uppercase}
+footer .c{display:flex;justify-content:space-between;gap:12px}
+
+@media(min-width:721px) and (max-width:1100px){
+ .meta div{padding:14px}
+ .meta b{font-size:18px}
+ h1{font-size:120px}
+ h2{font-size:40px}
+ .list{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:720px){
+ html{scroll-padding-top:108px}
+ .c{padding:0 20px}
+ header .c{height:auto;min-height:44px;flex-wrap:wrap;gap:0;padding-top:10px}
+ nav{width:100%;margin-top:6px;scrollbar-width:thin}
+ nav a{padding:0 10px;line-height:40px}
+ nav a:first-child{padding-left:0}
+ .hero{padding-top:28px}
+ h1{font-size:80px;margin:24px 0;word-break:normal;white-space:nowrap}
+ h2{font-size:32px}
+ .meta{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .meta div{padding:14px 16px}
+ .meta div:nth-child(even){border-right:0}
+ .meta div:not(:last-child){border-bottom:1px solid var(--ink)}
+ .meta div:last-child{grid-column:1/-1}
+ section{padding:44px 0}
+ .head{grid-template-columns:1fr;gap:16px;margin-bottom:28px}
+ .list{grid-template-columns:1fr}
+ .rows div{grid-template-columns:1fr;gap:4px}
+ .prose{font-size:15px}
+ pre{padding:20px;font-size:12px}
+ th,td{padding:10px;font-size:12px}
+ .cta{font-size:24px;padding:12px}
+ footer .c{flex-wrap:wrap}
+}
+@media(max-width:400px){
+ h1{font-size:52px}
+ .cta{font-size:20px}
+}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto}
+ *{transition:none!important}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="c">
+    <a class="brand" href="index.html"><i></i>Axiom</a>
+    <nav>
+      <a href="#overview">Overview</a>
+      <a href="#config">Config</a>
+      <a href="#build">Build</a>
+      <a href="#signing">Signing</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#contact">Contact</a>
+      <a href="index.html">← Home</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="c">
+    <h1>Poly<em>.</em></h1>
+    <div class="meta">
+      <div>Spec<b>0.1 draft</b></div>
+      <div>Status<b>Planned</b></div>
+      <div>Languages<b>3</b></div>
+      <div>Config<b>INI</b></div>
+      <div>License<b>MPL-2.0</b></div>
+    </div>
+  </div>
+</div>
+
+<section id="overview">
+  <div class="c">
+    <div class="head"><h2>One toolchain for three languages.</h2></div>
+    <div class="prose">
+      <p>Poly is a planned build system and package manager for Rust, C/C++ and Go. A project gets one manifest, <code>poly.ini</code>, and one lock file, <code>poly.lock</code>, no matter how many of the three languages it uses.</p>
+      <p>It isn't a wrapper. Poly drives <code>rustc</code>, <code>gcc</code>, <code>clang</code>, <code>msvc</code> and <code>go tool</code> directly, and it's meant to replace Cargo, CMake, Make and go mod rather than call them.</p>
+      <p>Poly will replace <a href="jiggle.html">Jiggle</a>, which is going to be deprecated.</p>
+      <p>Nothing is released yet. This page describes the 0.1 draft spec.</p>
+    </div>
+  </div>
+</section>
+
+<section id="principles">
+  <div class="c">
+    <div class="head"><h2>What it's built around.</h2></div>
+    <div class="list">
+      <div class="p"><b>I</b><div><h3>Native, not a wrapper</h3><p>Poly calls the compilers itself. It resolves dependencies, builds the graph, compiles incrementally and links.</p></div></div>
+      <div class="p"><b>II</b><div><h3>Minimal config</h3><p>One INI file that's easy to read, edit and parse.</p></div></div>
+      <div class="p"><b>III</b><div><h3>Signed packages</h3><p>Every package is a signed vfsx archive, checked before it's extracted.</p></div></div>
+      <div class="p"><b>IV</b><div><h3>Unix-y</h3><p>Familiar commands that are fast and compose well.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="config">
+  <div class="c">
+    <div class="head"><h2>Config is plain INI.</h2></div>
+<pre>[project]
+name = my-app
+version = 1.0.0
+
+[target.lib]
+language = rust
+type = lib
+sources = src/lib.rs
+
+[target.crypto]
+language = c
+type = static-lib
+sources = src/crypto/*.c, src/crypto/*.h
+compiler = clang
+flags = -O3, -Wall
+
+[target.server]
+language = go
+type = bin
+sources = cmd/server/*.go
+cgo = true
+
+[dependencies.rust]
+serde = 1.0
+tokio = 1.0|full
+
+[dependencies.c]
+openssl = 3.0|poly
+libz = 1.2|system
+
+[dependencies.go]
+github.com/gorilla/mux = 1.8</pre>
+    <dl class="rows">
+      <div><dt>Sections</dt><dd>Dots make a hierarchy, so <code>[target.lib]</code> is the target "lib" and <code>[build.profiles.release]</code> is nested.</dd></div>
+      <div><dt>Arrays</dt><dd>Comma-separated: <code>flags = -O3, -Wall</code>.</dd></div>
+      <div><dt>Metadata</dt><dd>A pipe adds details to a value. <code>tokio = 1.0|full</code> turns on the "full" features, and <code>openssl = 3.0|poly</code> pulls from the Poly registry.</dd></div>
+      <div><dt>Sources</dt><dd>Dependencies can come from <code>poly</code> (the signed registry), <code>system</code> (through pkg-config), <code>git</code> or <code>path</code>.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section id="dependencies">
+  <div class="c">
+    <div class="head"><h2>One lock file for everything.</h2></div>
+    <div class="prose">
+      <p>Dependencies for all three languages are resolved together and recorded in a single <code>poly.lock</code>, with a checksum and a signature for each one.</p>
+    </div>
+<pre>poly add rust:serde
+poly add c:openssl
+poly remove go:github.com/lib/pq
+poly update                # everything
+poly update rust:tokio     # one dependency
+poly outdated
+poly tree
+poly lock</pre>
+  </div>
+</section>
+
+<section id="build">
+  <div class="c">
+    <div class="head"><h2>Compiler drivers, not wrappers.</h2></div>
+    <dl class="rows">
+      <div><dt>Rust</dt><dd>Calls <code>rustc</code> directly. Poly works out the crate graph by reading the sources, handles features and cfg itself, and tracks dependencies for incremental builds.</dd></div>
+      <div><dt>C / C++</dt><dd>Detects <code>gcc</code>, <code>clang</code> or <code>msvc</code>. Source lists and globs come from <code>poly.ini</code>, headers are scanned so changes trigger rebuilds, and pkg-config is used for system dependencies only.</dd></div>
+      <div><dt>Go</dt><dd>Calls <code>go tool compile</code> and <code>go tool link</code>. Modules are read from <code>poly.ini</code> and no go.mod is used. It handles vendoring and CGO.</dd></div>
+    </dl>
+<pre>poly build                          # all targets
+poly build --target rust:lib        # one target
+poly build --release                # release profile
+poly build --target aarch64-linux   # cross-compile
+poly clean</pre>
+  </div>
+</section>
+
+<section id="signing">
+  <div class="c">
+    <div class="head"><h2>Signed by default.</h2></div>
+    <div class="prose">
+      <p>Poly packages are <a href="vfsx.html">vfsx</a> archives, like <code>my-app-1.0.0.vfsx.tar.zst</code>. Each one holds a manifest with signatures, the source, optional prebuilt binaries per platform and the lock file. Downloads are verified before they're extracted, and published packages are signed automatically.</p>
+    </div>
+<pre>poly sign
+poly verify
+poly trust add axiomwtf
+poly trust list
+poly publish</pre>
+  </div>
+</section>
+
+<section id="tooling">
+  <div class="c">
+    <div class="head"><h2>The rest of the toolbox.</h2></div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Area</th><th>Commands</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td>Test</td><td><code>poly test</code></td><td>Finds tests across languages and prints one output format. Supports coverage and benchmarks.</td></tr>
+          <tr><td>Lint and format</td><td><code>poly lint</code>, <code>poly fmt</code></td><td>Runs clippy, clang-tidy and golangci-lint, and formats with rustfmt, clang-format and gofmt.</td></tr>
+          <tr><td>Docs</td><td><code>poly doc</code></td><td>Generates documentation for every language, and can serve it locally.</td></tr>
+          <tr><td>Toolchains</td><td><code>poly toolchain</code></td><td>Installs several Rust, Go and compiler versions and pins one per project.</td></tr>
+          <tr><td>Cross-compiling</td><td><code>[cross]</code> in poly.ini</td><td>Targets other platforms with sysroot management and QEMU for testing.</td></tr>
+          <tr><td>CI</td><td><code>poly ci</code></td><td>Generates GitHub Actions, GitLab CI or Dockerfile configs from poly.ini.</td></tr>
+          <tr><td>Security</td><td><code>poly audit</code>, <code>poly sbom</code></td><td>Checks for known vulnerabilities and generates an SBOM in SPDX or CycloneDX.</td></tr>
+          <tr><td>Migration</td><td><code>poly migrate</code></td><td>Converts Cargo.toml, go.mod and CMakeLists.txt into poly.ini.</td></tr>
+          <tr><td>Cache</td><td><code>poly cache stats</code></td><td>Keeps a local build cache and can share one remotely.</td></tr>
+          <tr><td>Plugins and hooks</td><td><code>[plugins]</code>, <code>[hooks]</code></td><td>Adds custom build steps and runs scripts before or after builds and tests.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="roadmap">
+  <div class="c">
+    <div class="head"><h2>Roadmap.</h2></div>
+    <dl class="rows">
+      <div><dt>1. Core</dt><dd>The poly.ini parser, poly.lock generation, a SAT-based dependency resolver, basic rustc, gcc and go drivers, a simple task graph and a basic cache.</dd></div>
+      <div><dt>2. Languages</dt><dd>Full Rust, C/C++ and Go drivers, plus unified linker orchestration.</dd></div>
+      <div><dt>3. Integrations</dt><dd>vfsx signing and verification, and the package registry client.</dd></div>
+      <div><dt>4. Developer experience</dt><dd>Test runner, linting and formatting, docs, shell completion and IDE integration.</dd></div>
+      <div><dt>5. Advanced</dt><dd>Toolchain management, cross-compilation, CI generation, migration tools and plugins.</dd></div>
+      <div><dt>6. Registry</dt><dd>The poly.dev registry, package analytics, private registries and binary distribution.</dd></div>
+      <div><dt>Later</dt><dd>Possibly more languages, such as Zig, Nim, Java/Kotlin and JavaScript/TypeScript.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="c">
+    <div class="head"><h2>Follow along on GitHub.</h2></div>
+    <a class="cta" href="https://github.com/axiomwtf">github.com/axiomwtf</a>
+  </div>
+</section>
+
+<footer>
+  <div class="c">
+    <span>© Axiom</span>
+    <span>Poly 0.1 draft · Planned</span>
+  </div>
+</footer>
+</body>
+</html>
