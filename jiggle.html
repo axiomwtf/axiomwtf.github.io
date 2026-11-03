@@ -3,10 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jiggle: many languages, one program</title>
-<meta name="description" content="Jiggle compiles a single multi-language source file into one native program.">
+<title>Jiggle: many languages, one executable</title>
+<meta name="description" content="Jiggle compiles one source file containing several languages into a single native executable.">
+<meta property="og:title" content="Jiggle: many languages, one executable">
+<meta property="og:description" content="Jiggle compiles one source file containing several languages into a single native executable.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-1 -1 2 2'%3E%3Cpath d='M0,-1 C.05,-.28 .28,-.05 1,0 C.28,.05 .05,.28 0,1 C-.05,.28 -.28,.05 -1,0 C-.28,-.05 -.05,-.28 0,-1Z' fill='%23f2f2f2'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,600..900&family=Spline+Sans+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{--paper:#efece3;--ink:#121110;--sig:#1638ff;--soft:#5d5a53;--d:"Archivo",sans-serif;--m:"Spline Sans Mono",monospace}
@@ -15,71 +20,70 @@ html{scroll-behavior:smooth;scroll-padding-top:68px}
 body{background:var(--paper);color:var(--ink);font:15px/1.6 var(--m);-webkit-font-smoothing:antialiased}
 ::selection{background:var(--sig);color:var(--paper)}
 a{color:inherit}
+a:focus-visible{outline:3px solid var(--sig);outline-offset:4px}
 .c{max-width:1240px;margin:0 auto;padding:0 24px}
+
 header{position:sticky;top:0;z-index:9;background:var(--ink);color:var(--paper)}
 header .c{display:flex;justify-content:space-between;align-items:center;height:44px;gap:16px}
-.brand{font:900 18px var(--d);font-stretch:125%;text-transform:uppercase;text-decoration:none;display:flex;gap:8px;align-items:center}
+.brand{font:900 18px var(--d);font-stretch:125%;text-transform:uppercase;text-decoration:none;display:flex;gap:8px;align-items:center;flex-shrink:0}
 .brand i{width:12px;height:12px;background:var(--sig);clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%)}
-nav{display:flex;overflow-x:auto}nav a{font-size:12px;text-transform:uppercase;text-decoration:none;padding:0 12px;line-height:44px;white-space:nowrap}
+nav{display:flex;overflow-x:auto;min-width:0}
+nav a{font-size:12px;text-transform:uppercase;text-decoration:none;padding:0 12px;line-height:44px;white-space:nowrap}
 nav a:hover{background:var(--sig)}
+
 .hero{border-bottom:2px solid var(--ink);padding:40px 0 0}
-.hero>.c{width:100%}
-.tag{font-size:12px;text-transform:uppercase;letter-spacing:0}
-.tag:before{content:"■ ";color:var(--sig)}
-h1{font:900 160px/.9 var(--d);font-stretch:125%;text-transform:uppercase;letter-spacing:0;margin:28px 0 32px;overflow-wrap:anywhere}
+h1{font:900 160px/.9 var(--d);font-stretch:125%;text-transform:uppercase;margin:28px 0 32px;overflow-wrap:anywhere}
 h1 em{font-style:normal;color:var(--sig)}
-.sub{font:600 32px/1.2 var(--d);max-width:780px;padding-bottom:32px}
-.meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:2px solid var(--ink);margin:0 -24px}
-.meta div{padding:14px 24px;border-right:1px solid var(--ink);font-size:12px}.meta div:last-child{border:0}
-.meta b{display:block;font:800 22px var(--d);margin-top:4px}
-section{padding:72px 0;border-bottom:2px solid var(--ink)}
+.meta{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border:2px solid var(--ink);border-bottom:0}
+.meta div{padding:14px 24px;border-right:1px solid var(--ink);font-size:12px}
+.meta div:last-child{border:0}
+.meta b{display:block;font:800 22px var(--d);margin-top:4px;overflow-wrap:anywhere}
+
+section{padding:72px 0;border-bottom:2px solid var(--ink);scroll-margin-top:16px}
 .head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:24px;margin-bottom:40px;align-items:end}
-h2{font:800 52px/1.05 var(--d);letter-spacing:0;text-transform:uppercase}
+.head>*,.p,.meta div{min-width:0}
+h2{font:800 52px/1.05 var(--d);text-transform:uppercase}
+
 .list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:2px solid var(--ink);background:var(--ink);gap:2px}
 .p{background:var(--paper);padding:24px;transition:background .15s,color .15s}
-.p:hover{background:var(--sig);color:var(--paper)}.p:hover p,.p:hover b{color:var(--paper)}
+.p:hover{background:var(--sig);color:var(--paper)}
+.p:hover p,.p:hover b{color:var(--paper)}
+.p:hover code{background:var(--paper);color:var(--ink)}
 .p b{font:900 56px/1 var(--d);color:var(--sig);display:block;margin-bottom:28px}
 .p h3{font:800 20px var(--d);text-transform:uppercase;margin-bottom:6px}
-.p p{color:var(--soft)}
-.work{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
-.w{display:flex;flex-direction:column;justify-content:space-between;min-height:320px;padding:24px;border:2px solid var(--ink);background:var(--paper);text-decoration:none;box-shadow:8px 8px 0 var(--ink);transition:transform .15s,box-shadow .15s}
-.w:hover{transform:translate(-4px,-4px);box-shadow:12px 12px 0 var(--sig)}
-.w h3{font:900 80px/.95 var(--d);text-transform:uppercase;letter-spacing:0}
-.w p{margin-top:16px}
-.w span{align-self:flex-end;font:900 40px var(--d);color:var(--sig)}
-.cta{display:inline-block;font:900 40px var(--d);text-transform:uppercase;text-decoration:none;background:var(--ink);color:var(--paper);padding:12px 20px;overflow-wrap:anywhere;max-width:100%}
-.cta:hover{background:var(--sig)}
-footer{padding:20px 0;font-size:12px;text-transform:uppercase}
-footer .c{display:flex;justify-content:space-between;gap:12px}
-pre{background:var(--ink);color:var(--paper);padding:24px;overflow-x:auto;font:13px/1.8 var(--m);margin:32px 0 10px}
+.p p{color:var(--soft);overflow-wrap:anywhere}
+
+.prose{max-width:760px;font-size:17px;overflow-wrap:anywhere}
+.prose p+p{margin-top:14px}
+.note{font-size:12px;color:var(--soft)}
+pre{background:var(--ink);color:var(--paper);padding:24px;overflow-x:auto;max-width:100%;overscroll-behavior-x:contain;font:13px/1.8 var(--m);margin:32px 0 10px}
 code{background:var(--ink);color:var(--paper);padding:1px 5px;font-size:.88em}
 pre code{background:none;padding:0}
-.note{font-size:12px;color:var(--soft)}
-.prose{max-width:760px;font-size:17px}.prose p+p{margin-top:14px}
-.rows{border-top:2px solid var(--ink)}.rows div{display:grid;grid-template-columns:220px 1fr;gap:20px;padding:16px 0;border-bottom:1px solid var(--ink)}.rows dt{font:800 15px var(--d);text-transform:uppercase}.rows dd{margin:0}
-table{width:100%;border-collapse:collapse;border:2px solid var(--ink)}th{text-align:left;font-size:12px;text-transform:uppercase;background:var(--ink);color:var(--paper);padding:10px 14px}td{padding:14px;border-top:1px solid var(--ink);vertical-align:top}td:first-child{font:800 15px var(--d);text-transform:uppercase;white-space:nowrap}
-.scroll{overflow-x:auto}
-.ver{display:none}
-@media(max-width:1000px){.list{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:720px){.head{grid-template-columns:1fr}.list{grid-template-columns:1fr}.rows div{grid-template-columns:1fr;gap:4px}.brand span{display:none}}
 
-/* Keep document content inside its grid track; scroll only code blocks. */
-.brand{flex-shrink:0}
-nav{min-width:0}
-a:focus-visible{outline:3px solid var(--sig);outline-offset:4px}
-.head>* , .p, .w, .meta div, .rows dd{min-width:0}
-.p p, .prose, .rows dd{overflow-wrap:anywhere}
-.p:hover code{background:var(--paper);color:var(--ink)}
-.meta div{border-bottom:0}
-pre{max-width:100%;overscroll-behavior-x:contain}
-.scroll{max-width:100%;overscroll-behavior-x:contain}
-table{table-layout:fixed}
+.rows{border-top:2px solid var(--ink)}
+.rows div{display:grid;grid-template-columns:220px 1fr;gap:20px;padding:16px 0;border-bottom:1px solid var(--ink)}
+.rows dt{font:800 15px var(--d);text-transform:uppercase}
+.rows dd{min-width:0;overflow-wrap:anywhere}
+
+.scroll{overflow-x:auto;max-width:100%;overscroll-behavior-x:contain}
+table{width:100%;border-collapse:collapse;border:2px solid var(--ink);table-layout:fixed}
+th{text-align:left;font-size:12px;text-transform:uppercase;background:var(--ink);color:var(--paper);padding:10px 14px}
+td{padding:14px;border-top:1px solid var(--ink);vertical-align:top}
 th,td{overflow-wrap:anywhere}
-td:first-child{white-space:normal;width:22%}
+td:first-child{font:800 15px var(--d);text-transform:uppercase;width:22%}
 td code{white-space:normal;box-decoration-break:clone}
-section{scroll-margin-top:16px}
+
+.cta{display:inline-block;font:900 40px var(--d);text-transform:uppercase;text-decoration:none;background:var(--ink);color:var(--paper);padding:12px 20px;overflow-wrap:anywhere;max-width:100%}
+.cta:hover{background:var(--sig)}
+
+footer{padding:20px 0;font-size:12px;text-transform:uppercase}
+footer .c{display:flex;justify-content:space-between;gap:12px}
+
 @media(min-width:721px) and (max-width:1100px){
- h1{font-size:120px}h2{font-size:40px}.w h3{font-size:64px}
+ .meta div{padding:14px}
+ .meta b{font-size:18px}
+ h1{font-size:120px}
+ h2{font-size:40px}
  .list{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:720px){
@@ -92,52 +96,87 @@ section{scroll-margin-top:16px}
  .hero{padding-top:28px}
  h1{font-size:80px;margin:24px 0;word-break:normal;white-space:nowrap}
  h2{font-size:32px}
- .sub{font-size:24px}
- .meta{grid-template-columns:repeat(2,minmax(0,1fr));margin:0 -20px}
- .meta div{padding:14px 20px}
- .meta div:nth-child(2){border-right:0}
- .meta div:nth-child(-n+2){border-bottom:1px solid var(--ink)}
+ .meta{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .meta div{padding:14px 16px}
+ .meta div:nth-child(even){border-right:0}
+ .meta div:not(:last-child){border-bottom:1px solid var(--ink)}
+ .meta div:last-child{grid-column:1/-1}
  section{padding:44px 0}
- .head{gap:16px;margin-bottom:28px}
- .work{grid-template-columns:minmax(0,1fr)}
- .w{min-height:260px}.w h3{font-size:64px}
- .cta{font-size:24px;padding:12px}
+ .head{grid-template-columns:1fr;gap:16px;margin-bottom:28px}
+ .list{grid-template-columns:1fr}
+ .rows div{grid-template-columns:1fr;gap:4px}
  .prose{font-size:15px}
  pre{padding:20px;font-size:12px}
  th,td{padding:10px;font-size:12px}
+ .cta{font-size:24px;padding:12px}
  footer .c{flex-wrap:wrap}
 }
-@media(max-width:400px){h1{font-size:52px}.sub{font-size:22px}.w h3{font-size:52px}.cta{font-size:20px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+@media(max-width:400px){
+ h1{font-size:52px}
+ .cta{font-size:20px}
+}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto}
+ *{transition:none!important}
+}
 </style>
-<meta property="og:title" content="Jiggle: many languages, one program">
-<meta property="og:description" content="Jiggle compiles a single multi-language source file into one native program.">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary">
 </head>
 <body>
-<header><div class="c"><a class="brand" href="index.html"><i></i>Axiom</a><nav><a href="#overview">Overview</a><a href="#syntax">Syntax</a><a href="#languages">Languages</a><a href="#contact">Contact</a><a href="index.html">← Home</a></nav></div></header>
-
-<div class="hero"><div class="c"><h1>Jiggle<em>.</em></h1><div class="meta"><div>Spec<b>0.2.1</b></div><div>Input<b>1 .jgl</b></div><div>Output<b>1 binary</b></div><div>Written in<b>Rust</b></div></div></div></div>
-
-<section id="overview"><div class="c">
-  <div class="head"><h2>No build config to babysit.</h2></div>
-<div class="prose"><p>A <code>project.jgl</code> file contains code blocks in different languages. The compiler, <code>jglc</code>, unpacks them, bundles them as <code>.tar.xz</code>, writes a <code>build.sh</code> for you and produces a single executable.</p><p>You never maintain a Makefile, CMake, Gradle or package.json script.</p></div>
-</div></section>
-
-<section id="output"><div class="c">
-  <div class="head"><h2>The result is always one file.</h2></div>
-  <div class="list">
-    <div class="p"><b>I</b><div><h3>Single executable</h3><p>Every language payload is embedded as data, so the output is just <code>jgl_binary</code> (or <code>.exe</code> on Windows).</p></div></div>
-    <div class="p"><b>II</b><div><h3>Runtimes stated up front</h3><p>JVM, .NET and CPython can't be linked in. The program checks for them on launch and tells you what's missing.</p></div></div>
-    <div class="p"><b>III</b><div><h3>All or nothing</h3><p>If one executable can't be produced, <code>jglc</code> stops with an error. No half-built output.</p></div></div>
-    <div class="p"><b>IV</b><div><h3>Dependencies in one place</h3><p>One <code>dep[lang]</code> block per language. Jiggle writes each ecosystem's own dependency file.</p></div></div>
+<header>
+  <div class="c">
+    <a class="brand" href="index.html"><i></i>Axiom</a>
+    <nav>
+      <a href="#overview">Overview</a>
+      <a href="#syntax">Syntax</a>
+      <a href="#languages">Languages</a>
+      <a href="#contact">Contact</a>
+      <a href="index.html">← Home</a>
+    </nav>
   </div>
-</div></section>
+</header>
 
-<section id="syntax"><div class="c">
-  <div class="head"><h2>Write blocks, skip the build scripts.</h2></div>
-<div class="prose"><p>A block is a header followed by <code>{ }</code>. Named blocks keep their name; unnamed ones are numbered automatically (<code>v1.lua</code>, <code>v2.lua</code>).</p></div><pre>project._jgl {
+<div class="hero">
+  <div class="c">
+    <h1>Jiggle<em>.</em></h1>
+    <div class="meta">
+      <div>Spec<b>0.2.1</b></div>
+      <div>Input<b>1 .jgl</b></div>
+      <div>Output<b>1 binary</b></div>
+      <div>Written in<b>Rust</b></div>
+      <div>License<b>MPL-2.0</b></div>
+    </div>
+  </div>
+</div>
+
+<section id="overview">
+  <div class="c">
+    <div class="head"><h2>Skip the build config.</h2></div>
+    <div class="prose">
+      <p>A <code>project.jgl</code> file holds code blocks in different languages. The compiler, <code>jglc</code>, unpacks them, bundles everything into a <code>.tar.xz</code>, writes a <code>build.sh</code> and produces one executable.</p>
+      <p>You don't have to write or maintain a Makefile, a CMake file, a Gradle config or package.json scripts.</p>
+    </div>
+  </div>
+</section>
+
+<section id="output">
+  <div class="c">
+    <div class="head"><h2>You always get one file.</h2></div>
+    <div class="list">
+      <div class="p"><b>I</b><div><h3>Single executable</h3><p>Each language's code is embedded as data, so the output is just <code>jgl_binary</code> (<code>jgl_binary.exe</code> on Windows).</p></div></div>
+      <div class="p"><b>II</b><div><h3>Runtimes up front</h3><p>JVM, .NET and CPython can't be linked in. The program checks for them when it starts and tells you which ones are missing.</p></div></div>
+      <div class="p"><b>III</b><div><h3>All or nothing</h3><p>If <code>jglc</code> can't produce a single executable, it stops with an error instead of leaving you a half-built result.</p></div></div>
+      <div class="p"><b>IV</b><div><h3>Dependencies in one place</h3><p>Declare them in one <code>dep[lang]</code> block per language and Jiggle writes each ecosystem's own dependency file.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="syntax">
+  <div class="c">
+    <div class="head"><h2>Blocks, not build scripts.</h2></div>
+    <div class="prose">
+      <p>A block is a header followed by <code>{ }</code>. Named blocks keep their name. Unnamed ones are numbered automatically (<code>v1.lua</code>, <code>v2.lua</code>).</p>
+    </div>
+<pre>project._jgl {
     target cross
     dep[rs] { serde = "1.0" }
     dep[js] { express = "^4.18.0" }
@@ -154,11 +193,14 @@ server._js {
 
 .lua {
     print("no name, saved as v1.lua")
-}</pre><p class="note"><code>project._jgl</code> is the manifest and the only ._jgl block the compiler reads.</p>
-</div></section>
+}</pre>
+    <p class="note"><code>project._jgl</code> is the manifest, and it's the only <code>._jgl</code> block the compiler reads.</p>
+  </div>
+</section>
 
-<section id="pipeline"><div class="c">
-  <div class="head"><h2>What happens when you compile.</h2></div>
+<section id="pipeline">
+  <div class="c">
+    <div class="head"><h2>What happens when you compile.</h2></div>
 <pre>project.jgl
   → read manifest, resolve imports depth-first
   → parse blocks
@@ -167,33 +209,71 @@ server._js {
   → turn dep[lang] into native dependency files
   → bundle project.tar.xz
   → write build.sh
-  → compile to jgl_binary</pre><dl class="rows"><div><dt>Linker</dt><dd>Rust links when it's present; otherwise clang or gcc.</dd></div><div><dt>Windows</dt><dd><code>--target-win</code> builds <code>jgl_binary.exe</code> using <code>x86_64-pc-windows-gnu</code>.</dd></div><div><dt>build.sh</dt><dd>Extracts, restores dependencies, compiles each language and links. <code>--r</code> gives a release build (<code>-O3 -s</code>); debug is the default (<code>-O0 -g</code>). It copies the result to the project root and removes <code>jgl_build/</code>.</dd></div></dl>
-</div></section>
+  → compile to jgl_binary</pre>
+    <dl class="rows">
+      <div><dt>Linker</dt><dd>Rust does the linking if it's installed. Otherwise it falls back to clang or gcc.</dd></div>
+      <div><dt>Windows</dt><dd><code>--target-win</code> builds <code>jgl_binary.exe</code> using <code>x86_64-pc-windows-gnu</code>.</dd></div>
+      <div><dt>build.sh</dt><dd>Extracts the bundle, restores dependencies, compiles each language and links. <code>--r</code> gives a release build (<code>-O3 -s</code>); debug is the default (<code>-O0 -g</code>). It copies the result to the project root and removes <code>jgl_build/</code>.</dd></div>
+    </dl>
+  </div>
+</section>
 
-<section id="cli"><div class="c">
-  <div class="head"><h2>Four commands.</h2></div>
+<section id="cli">
+  <div class="c">
+    <div class="head"><h2>Three commands.</h2></div>
 <pre>jglc compile  [--project &lt;file&gt;] [--output &lt;dir&gt;] [--bundle-only] [--target-win]
 jglc validate [--project &lt;file&gt;]
 jglc generate [--project &lt;file&gt;] [--output &lt;dir&gt;] [--target-win]
 
-# shortcuts: build = compile · check = validate · gen = generate</pre><p class="note">Defaults: project.jgl in, current folder out.</p>
-</div></section>
+# shortcuts: build = compile · check = validate · gen = generate</pre>
+    <p class="note">By default it reads project.jgl and writes to the current folder.</p>
+  </div>
+</section>
 
-<section id="languages"><div class="c">
-  <div class="head"><h2>What it can build today.</h2></div>
-<div class="scroll"><table><thead><tr><th>Kind</th><th>Languages</th><th>Handling</th></tr></thead><tbody><tr><td>Native</td><td>Rust, C, C++, Go, Zig, Nim, Fortran</td><td>Built with each native toolchain, then linked.</td></tr><tr><td>Embedded</td><td>JavaScript, TypeScript, JSX, TSX, Python, Lua, Ruby, PHP, Shell, BrightScript</td><td>TypeScript becomes JS at build time (bun or tsc). The rest are stored as data and run from the executable. BrightScript targets Roku only.</td></tr><tr><td>JVM / .NET</td><td>Java, Kotlin, Scala, C#</td><td>Built into a JAR or DLL and embedded; the runtime is listed as a requirement.</td></tr><tr><td>Static</td><td>Markdown, AsciiDoc</td><td>Stored as plain text.</td></tr><tr><td>Custom</td><td>Your own, in the manifest</td><td>Built with the command in a <code>._sh</code> block.</td></tr></tbody></table></div><p class="note" style="margin-top:16px">sh, md, adoc and bs have no package ecosystem, so they can't use dep[lang].</p>
-</div></section>
+<section id="languages">
+  <div class="c">
+    <div class="head"><h2>What it can build today.</h2></div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Kind</th><th>Languages</th><th>Handling</th></tr></thead>
+        <tbody>
+          <tr><td>Native</td><td>Rust, C, C++, Go, Zig, Nim, Fortran</td><td>Built with each native toolchain, then linked.</td></tr>
+          <tr><td>Embedded</td><td>JavaScript, TypeScript, JSX, TSX, Python, Lua, Ruby, PHP, Shell</td><td>TypeScript becomes JS at build time (bun or tsc). The rest are stored as data and run from the executable.</td></tr>
+          <tr><td>JVM / .NET</td><td>Java, Kotlin, Scala, C#</td><td>Built into a JAR or DLL and embedded. The runtime is listed as a requirement.</td></tr>
+          <tr><td>Static</td><td>Markdown, AsciiDoc</td><td>Stored as plain text.</td></tr>
+          <tr><td>Custom</td><td>Your own, defined in the manifest</td><td>Built with the command in a <code>._sh</code> block.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note" style="margin-top:16px">sh, md and adoc have no package ecosystem, so they can't use dep[lang].</p>
+  </div>
+</section>
 
-<section id="rules"><div class="c">
-  <div class="head"><h2>Edge cases, settled.</h2></div>
-<dl class="rows"><div><dt>Same named block twice</dt><dd>Compiler error. Fix it in the manifest.</dd></div><div><dt>Unnamed blocks</dt><dd>Numbered across files; they never clash.</dd></div><div><dt>Same dependency twice</dt><dd>Same version is merged. Different versions is an error.</dd></div><div><dt>Custom languages</dt><dd>Require a <code>dep.&lt;file&gt;</code> block, even if empty. Built-in extensions are reserved.</dd></div><div><dt>Manifest only</dt><dd><code>dep[lang]</code> anywhere but <code>project._jgl</code> fails to parse.</dd></div></dl>
-</div></section>
+<section id="rules">
+  <div class="c">
+    <div class="head"><h2>Edge cases.</h2></div>
+    <dl class="rows">
+      <div><dt>Same named block twice</dt><dd>Compiler error. Fix it in the manifest.</dd></div>
+      <div><dt>Unnamed blocks</dt><dd>Numbered across files, so they never clash.</dd></div>
+      <div><dt>Same dependency twice</dt><dd>The same version is merged. Different versions are an error.</dd></div>
+      <div><dt>Custom languages</dt><dd>Need a <code>dep.&lt;file&gt;</code> block, even an empty one. Built-in extensions are reserved.</dd></div>
+      <div><dt>Manifest only</dt><dd><code>dep[lang]</code> anywhere except <code>project._jgl</code> fails to parse.</dd></div>
+    </dl>
+  </div>
+</section>
 
-<section id="contact"><div class="c">
-  <div class="head"><h2>Spec, source and questions live on GitHub.</h2></div>
-<a class="cta" href="https://github.com/axiomwtf">github.com/axiomwtf</a>
-</div></section>
+<section id="contact">
+  <div class="c">
+    <div class="head"><h2>Spec, source and issues are on GitHub.</h2></div>
+    <a class="cta" href="https://github.com/axiomwtf">github.com/axiomwtf</a>
+  </div>
+</section>
 
-<footer><div class="c"><span>© Axiom</span><span>Jiggle 0.2.1 · Rust</span></div></footer>
+<footer>
+  <div class="c">
+    <span>© Axiom</span>
+    <span>Jiggle 0.2.1 · Rust</span>
+  </div>
+</footer>
 </body>
 </html>
