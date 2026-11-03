@@ -401,6 +401,15 @@ poly fmt                        # format everything
 
 Linting can run on every build and can gate CI. Pre-commit hooks are supported.
 
+**Naming rules per linter.** The camelCase rules in section 5.3 apply to `poly lint` as well as to builds:
+
+- **clippy:** `poly lint` passes `-A non_snake_case` to clippy, the same suppression used for `rustc` builds.
+- **clang-tidy:** the `readability-identifier-naming` check is off by default. Poly does not enable it. A project can turn it on in its own `.clang-tidy` file.
+- **golangci-lint:** Go's own naming style is camelCase, so no suppression is needed. `poly lint` does not enable `revive` naming rules that flag camelCase.
+- **rustfmt, clang-format, gofmt:** these format code and don't check identifier names, so they are unaffected.
+
+Config keys in `poly.ini` are never read by the linters, so they are unaffected too.
+
 ### 10.3 Documentation
 
 ```bash
