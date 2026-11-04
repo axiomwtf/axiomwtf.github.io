@@ -1,7 +1,7 @@
 # Poly: Polyglot Build System and Package Manager
 
 **Spec version:** 0.2-draft
-**Status:** Planned. Nothing is released.
+**Status:** In development. Nothing is released.
 **License:** MPL-2.0
 **Last updated:** 2026-11-03
 
