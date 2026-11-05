@@ -320,14 +320,14 @@ dist/
 │   │   └── libpoly_core.rlib
 │   ├── windows/
 │   │   └── poly-cli.exe
-│   └── *.vfsx                    ← VFSX packages per platform
+│   └── *.vfsx.tar.zst            ← VFSX packages per platform
 └── release/
     └── ...
 ```
 
 **Cross-compilation.** Poly compiles for both Windows and Linux by default. There is no `--target` flag to choose an OS; Poly always produces binaries for both platforms. For Rust, this uses `--target x86_64-unknown-linux-gnu` and `--target x86_64-pc-windows-gnu`. For Go, it sets `GOOS=linux` and `GOOS=windows`. For C/C++, it uses the appropriate compiler or cross-compiler.
 
-**VFSX packaging.** After building, Poly packages the compiled binaries as VFSX archives using the external `vfsx` command. Each platform gets its own `.vfsx` archive containing all binaries for that platform. The archives are named `{project}-{platform}.{profile}.vfsx`.
+**VFSX packaging.** After building, Poly packages the compiled binaries as VFSX archives using the external `vfsx` command (`vfsx create <dir> -o <out> -c zstd`). Each platform gets its own archive containing all binaries for that platform. The archives are named `{project}-{platform}.{profile}.vfsx.tar.zst` and are written to `dist/{profile}/`.
 
 ---
 
@@ -487,7 +487,7 @@ For each platform, Poly:
 - **C/C++:** uses the platform-appropriate compiler or cross-compiler
 - **Go:** sets `GOOS=linux` or `GOOS=windows` (and `GOARCH=amd64`)
 
-After compiling, Poly packages each platform's binaries into a separate VFSX archive in `dist/{profile}/`. The archives are named `{project}-{platform}.{profile}.vfsx`.
+After compiling, Poly packages each platform's binaries into a separate VFSX archive in `dist/{profile}/`. The archives are named `{project}-{platform}.{profile}.vfsx.tar.zst` (zstd-compressed VFSX archives produced by the external `vfsx` tool).
 
 Advanced cross-compilation to other platforms (aarch64, macOS, etc.) can be configured in `[cross]` for future phases.
 
