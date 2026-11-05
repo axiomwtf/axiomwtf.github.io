@@ -141,6 +141,9 @@ go.flags = -ldflags, -s -w
 targets = rust:lib, c:crypto, go:server
 platforms = x86_64-linux, aarch64-macos, x86_64-windows
 includeDocs = true
+crateName = my-org-my-app        # optional crates.io name override
+tokenEnv = MY_REGISTRY_TOKEN     # optional env var for custom registry auth
+# registry = https://registry.example.com   # optional custom Poly registry
 
 [vfsx]
 sign = true
@@ -380,19 +383,39 @@ poly publish                    # publish to crates.io, signed
 
 `[publish]` in `poly.ini` sets the targets and platforms. For each platform, the build produces one executable and packs it into the package archive. Optional documentation is included when `include_docs = true`.
 
+Every `poly build` also produces the combined installable package `dist/{name}-{version}.vfsx.tar.zst` (containing `package.json`, `poly.lock`, and one executable per platform under `bin/<platform>/`). `poly build --no-package` skips this.
+
+**crates.io**: `poly publish` uploads one `.crate` archive per `rust:*` publish target. Each `.crate` is a gzipped tarball of the *entire project source tree* plus `poly.ini`, `poly.lock`, and a stub `Cargo.toml`/`Cargo.toml.orig`. The stub exists only for registry compatibility — it declares `[package]` metadata and a single target pointing at the crate's sources, but no real dependencies; `poly.ini` remains the source of truth and `cargo` cannot meaningfully build the crate.
+
+Crate naming:
+
+- `[publish] crateName = "foo"` with a single Rust target → crate `foo`
+- `[publish] crateName` with multiple Rust targets → `foo-<suffix>` per target (the `{project}-` prefix is stripped, e.g. `poly-cli` → `foo-cli`)
+- No `crateName` → the target id itself
+
+**Auth**: `poly login` prompts for an API token (hidden input) and stores it in `~/.config/poly/credentials.toml` (`0600`); `poly logout` removes it. Token resolution order: `CARGO_REGISTRY_TOKEN` env → Poly credentials → `~/.cargo/credentials.toml`.
+
+**Custom registries**: `[publish] registry = "https://…"` (+ optional `tokenEnv`) additionally uploads the `.vfsx.tar.zst` package to `{registry}/api/v1/packages` with `x-poly-name`/`x-poly-version` headers and bearer auth.
+
+Publish is resilient: already-uploaded versions are skipped, per-target failures are reported together, and crates.io rate limits can be retried safely.
+
 Installers (deb, rpm, msi) can be generated from the same package.
 
 ### 9.2 Installing
 
 ```bash
-poly install my-app                          # from crates.io
-poly install --local ./my-app-1.0.0.vfsx.tar.zst
+poly install my-app                          # from crates.io: download .crate, build with Poly, install
+poly install my-app@1.2.3                    # pinned version
+poly install my-app --local ./my-app-1.0.0.vfsx.tar.zst
+poly install my-app                          # Poly registry when POLY_REGISTRY_URL/[publish] registry is set
 poly uninstall my-app
 poly update my-app                           # update an installed package
 poly update                                  # update Poly itself
 ```
 
-Installing verifies the signature, selects the executable for the current platform and places it on the path. System integration (systemd, launchd) is optional.
+Registry resolution order: `--local` file → `POLY_REGISTRY_URL`/`[publish] registry` (serves `.vfsx.tar.zst`) → crates.io (serves `.crate` source packages, which Poly compiles locally before installing).
+
+Installing verifies the signature where configured, selects the executable for the current platform and places it on the path. System integration (systemd, launchd) is optional.
 
 ---
 
@@ -593,7 +616,7 @@ Environments are sandboxed for reproducible builds.
 ```bash
 # Core
 poly init
-poly build [--target <id>] [--release]
+poly build [--target <id>] [--release] [--no-package]
 poly test
 poly clean
 
@@ -609,6 +632,8 @@ poly lock
 poly sign
 poly verify
 poly trust add|list|remove <key>
+poly login [registry] [--token <t>]
+poly logout [registry]
 poly publish
 
 # Quality
