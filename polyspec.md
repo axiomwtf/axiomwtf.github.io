@@ -161,7 +161,7 @@ go = gofmt
 
 [cache]
 local = ~/.poly/cache
-remote = https://cache.poly.dev
+remote = https://cache.crates.io
 enabled = true
 
 [toolchain.rust]
@@ -248,7 +248,7 @@ signature = vfsx:xyz789...
 [dependency.c.openssl]
 version = 3.0.13
 checksum = sha256:def456...
-source = poly.dev
+source = crates.io
 signature = vfsx:uvw101...
 ```
 
@@ -351,7 +351,7 @@ poly verify                     # verify all signatures
 poly trust add axiomwtf         # add a trusted signer
 poly trust list
 poly trust remove <key>
-poly publish                    # publish to poly.dev, signed
+poly publish                    # publish to crates.io, signed
 ```
 
 ---
@@ -367,7 +367,7 @@ Installers (deb, rpm, msi) can be generated from the same package.
 ### 9.2 Installing
 
 ```bash
-poly install my-app                          # from poly.dev
+poly install my-app                          # from crates.io
 poly install --local ./my-app-1.0.0.vfsx.tar.zst
 poly uninstall my-app
 poly update my-app                           # update an installed package
@@ -418,7 +418,7 @@ poly doc --open
 poly doc --serve
 ```
 
-Docs are generated for every language. API references are extracted from the source. Docs can be hosted on poly.dev.
+Docs are generated for every language. API references are extracted from the source. Docs can be hosted on crates.io.
 
 ### 10.4 Versioning and releases
 
@@ -551,7 +551,7 @@ Environments are sandboxed for reproducible builds.
 
 ---
 
-## 14. Registry (poly.dev)
+## 14. Registry (crates.io)
 
 - Search and discovery
 - Package analytics and download counts
@@ -665,7 +665,7 @@ poly ide vscode|neovim|lsp
 - Plugin system
 
 ### Phase 6: Registry and ecosystem
-- poly.dev registry
+- crates.io registry
 - Package analytics
 - Private registries
 - Binary installation and distribution
