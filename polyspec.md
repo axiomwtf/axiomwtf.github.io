@@ -304,12 +304,30 @@ poly lock
 ### 7.4 Commands
 
 ```bash
-poly build                          # all default targets
+poly build                          # all default targets, all platforms
 poly build --target rust:lib        # one target
 poly build --release                # release profile
-poly build --target aarch64-linux   # cross-compile
 poly clean
 ```
+
+**Build output.** Poly writes build artifacts to `dist/{profile}/` instead of `target/`. The `{profile}` is `debug` or `release` based on the `--release` flag. Inside `dist/{profile}/`, artifacts are organized by platform:
+
+```
+dist/
+├── debug/
+│   ├── linux/
+│   │   ├── poly-cli
+│   │   └── libpoly_core.rlib
+│   ├── windows/
+│   │   └── poly-cli.exe
+│   └── *.vfsx                    ← VFSX packages per platform
+└── release/
+    └── ...
+```
+
+**Cross-compilation.** Poly compiles for both Windows and Linux by default. There is no `--target` flag to choose an OS; Poly always produces binaries for both platforms. For Rust, this uses `--target x86_64-unknown-linux-gnu` and `--target x86_64-pc-windows-gnu`. For Go, it sets `GOOS=linux` and `GOOS=windows`. For C/C++, it uses the appropriate compiler or cross-compiler.
+
+**VFSX packaging.** After building, Poly packages the compiled binaries as VFSX archives using the external `vfsx` command. Each platform gets its own `.vfsx` archive containing all binaries for that platform. The archives are named `{project}-{platform}.{profile}.vfsx`.
 
 ---
 
@@ -462,7 +480,16 @@ Multiple Rust, Go and compiler versions can be installed. Each project can pin i
 
 ### 11.2 Cross-compilation
 
-Cross-compilation uses sysroots, and QEMU can run the results for testing. Targets are set in `[cross]` or with `--target`.
+Poly compiles for both Windows and Linux by default on every build. There is no option to choose a single OS; `poly build` always produces binaries for both platforms.
+
+For each platform, Poly:
+- **Rust:** invokes `rustc --target x86_64-unknown-linux-gnu` or `--target x86_64-pc-windows-gnu`
+- **C/C++:** uses the platform-appropriate compiler or cross-compiler
+- **Go:** sets `GOOS=linux` or `GOOS=windows` (and `GOARCH=amd64`)
+
+After compiling, Poly packages each platform's binaries into a separate VFSX archive in `dist/{profile}/`. The archives are named `{project}-{platform}.{profile}.vfsx`.
+
+Advanced cross-compilation to other platforms (aarch64, macOS, etc.) can be configured in `[cross]` for future phases.
 
 ---
 

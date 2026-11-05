@@ -244,11 +244,13 @@ poly lock</pre>
       <div><dt>C / C++</dt><dd>Detects <code>gcc</code>, <code>clang</code> or <code>msvc</code>. Source lists and globs come from <code>poly.ini</code>, headers are scanned so changes trigger rebuilds, and pkg-config is used for system dependencies only.</dd></div>
       <div><dt>Go</dt><dd>Calls <code>go tool compile</code> and <code>go tool link</code>. Modules are read from <code>poly.ini</code> and no go.mod is used. It handles vendoring and CGO.</dd></div>
     </dl>
-<pre>poly build                          # all targets
-poly build --target rust:lib        # one target
+    <div class="prose" style="margin-top:32px">
+      <p><strong>Cross-compiles by default.</strong> Every <code>poly build</code> produces binaries for both Windows and Linux—there's no flag to pick just one OS. Artifacts go to <code>dist/{profile}/</code>, organized by platform, and each platform's binaries are packaged as a VFSX archive.</p>
+    </div>
+<pre>poly build                          # all targets, Windows + Linux
 poly build --release                # release profile
-poly build --target aarch64-linux   # cross-compile
 poly clean</pre>
+    <p class="note">Output: <code>dist/debug/linux/</code>, <code>dist/debug/windows/</code>, and <code>dist/debug/{project}-{platform}.debug.vfsx</code> archives.</p>
   </div>
 </section>
 
@@ -284,7 +286,7 @@ poly publish</pre>
           <tr><td>Lint and format</td><td><code>poly lint</code>, <code>poly fmt</code></td><td>Runs clippy, clang-tidy and golangci-lint, and formats with rustfmt, clang-format and gofmt. Clippy gets the same camelCase allowance as builds. clang-tidy's naming check stays off unless the project enables it.</td></tr>
           <tr><td>Docs</td><td><code>poly doc</code></td><td>Generates documentation for every language, and can serve it locally.</td></tr>
           <tr><td>Toolchains</td><td><code>poly toolchain</code></td><td>Installs several Rust, Go and compiler versions and pins one per project.</td></tr>
-          <tr><td>Cross-compiling</td><td><code>[cross]</code> in poly.ini</td><td>Targets other platforms with sysroot management and QEMU for testing.</td></tr>
+          <tr><td>Cross-compiling</td><td>Automatic</td><td>Poly builds for Windows and Linux by default. Artifacts go to <code>dist/{profile}/{platform}/</code> and each platform gets a VFSX archive.</td></tr>
           <tr><td>CI</td><td><code>poly ci</code></td><td>Generates GitHub Actions, GitLab CI or Dockerfile configs from poly.ini.</td></tr>
           <tr><td>Security</td><td><code>poly audit</code>, <code>poly sbom</code></td><td>Checks for known vulnerabilities and generates an SBOM in SPDX or CycloneDX.</td></tr>
           <tr><td>Migration</td><td><code>poly migrate</code></td><td>Converts Cargo.toml, go.mod and CMakeLists.txt into poly.ini.</td></tr>
