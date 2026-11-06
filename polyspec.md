@@ -237,6 +237,8 @@ Go and C/C++ have no equivalent default warning, so no suppression is needed the
 
 One lock file covers all three languages. Each entry records a version, a checksum and a signature.
 
+The checksum scheme follows the source: `sha256:` for crates.io and proxy.golang.org (registry-mandated), `blake3:` for Poly-registry packages (vfsx archives are blake3 content-addressed), and no checksum for local sources (`system`, `git:`, `path:`). `signature = vfsx:…` is recorded once the archive is verified.
+
 ```ini
 [lock]
 version = 1
@@ -319,10 +321,10 @@ poly clean
 dist/
 ├── debug/
 │   ├── linux/
-│   │   ├── poly-cli
+│   │   ├── poly
 │   │   └── libpoly_core.rlib
 │   ├── windows/
-│   │   └── poly-cli.exe
+│   │   └── poly.exe
 │   └── *.vfsx.tar.zst            ← VFSX packages per platform
 └── release/
     └── ...
@@ -390,7 +392,7 @@ Every `poly build` also produces the combined installable package `dist/{name}-{
 Crate naming:
 
 - `[publish] crateName = "foo"` with a single Rust target → crate `foo`
-- `[publish] crateName` with multiple Rust targets → `foo-<suffix>` per target (the `{project}-` prefix is stripped, e.g. `poly-cli` → `foo-cli`)
+- `[publish] crateName` with multiple Rust targets → `foo-<suffix>` per target (the `{project}-` prefix is stripped, e.g. `poly-tools` → `foo-tools`)
 - No `crateName` → the target id itself
 
 **Auth**: `poly login` prompts for an API token (hidden input) and stores it in `~/.config/poly/credentials.toml` (`0600`); `poly logout` removes it. Token resolution order: `CARGO_REGISTRY_TOKEN` env → Poly credentials → `~/.cargo/credentials.toml`.
