@@ -11,7 +11,7 @@ I currently have two tools:
 - **Jiggle** (spec 0.2.1) is going to be deprecated in favor of Poly. It takes a single `.jgl` source file containing Rust, JavaScript, Python and other languages and compiles it into one native executable.
 - **vfsx** (spec 0.2.0) packs a folder into one signed, content-addressed archive (Ed25519) that anyone can verify.
 
-I'm also developing **Poly** (spec 0.2 draft). It's a build system and package manager for Rust, C/C++ and Go, and it will replace Jiggle.
+I'm also developing **Poly** (spec 0.2.1). It's a build system and package manager for Rust, C/C++ and Go, and it will replace Jiggle.
 
 ## What's in here
 

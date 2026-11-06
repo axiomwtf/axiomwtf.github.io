@@ -1,6 +1,6 @@
 # Poly: Polyglot Build System and Package Manager
 
-**Spec version:** 0.2.0
+**Spec version:** 0.2.1
 **Status:** Released.
 **License:** MPL-2.0
 **Last updated:** 2026-11-05
@@ -15,11 +15,11 @@ Poly is not a wrapper. It calls the compilers itself:
 
 - **Rust:** `rustc` directly. No Cargo.
 - **C/C++:** `gcc`, `clang` or `msvc` directly. No CMake, Make, Meson or Autotools.
-- **Go:** `go tool compile` and `go tool link` directly. No `go mod` build system.
+- **Go:** `go tool compile` and `go tool link` directly for pure-Go packages. Module-aware operations (cgo builds, `poly test`, `poly lint`) delegate to the `go` command — poly does not implement a Go module/build system.
 
 Poly does its own dependency resolution, build graph construction, incremental compilation and linking.
 
-Each published package is a single VFSX-signed archive. For each platform it contains one executable, and that executable is built from every language in the package.
+Each package is a single VFSX-signed archive. For each platform it contains one executable, and that executable is built from every language in the package.
 
 ---
 
@@ -150,12 +150,6 @@ sign = true
 keyfile = ~/.poly/private.pem
 verify = true
 trustStore = ~/.poly/trust/
-
-[lint]
-rust = clippy
-c = clang-tidy
-go = golangci-lint
-runOnBuild = true
 
 [format]
 rust = rustfmt
@@ -298,8 +292,10 @@ poly lock
 
 ### 7.3 Go (direct go tool)
 
-- Direct `go tool compile` and `go tool link` invocation
-- Module information read from `poly.ini`. `go.mod` is not used.
+- Pure-Go packages compile through `go tool compile` and `go tool link` invoked directly — no `go build`, no `go.mod`. Poly generates the `importcfg` itself.
+- Dependency export data (`.a` files for stdlib and imports) is resolved with `go list -export -deps`, which compiles packages on demand. Poly does not reimplement Go's package loader or builder; this is the one place the `go` command participates in a pure-Go build.
+- CGO packages, `poly test`, and `poly lint` for Go delegate to the `go` command (`go build`, `go test`, `go vet`): cgo file generation and testmain synthesis have no `go tool`-level equivalent.
+- `go.mod`/`go.sum` are not read. Go target dependencies declared in `poly.ini` are not yet wired into the resolver (currently empty); module-mode operations fall back to the `go` command's own resolution.
 - Vendoring
 - GOPATH and module modes
 - CGO, so C dependencies can be called from Go
@@ -315,24 +311,20 @@ poly build --release                # release profile
 poly clean
 ```
 
-**Build output.** Poly writes build artifacts to `dist/{profile}/` instead of `target/`. The `{profile}` is `debug` or `release` based on the `--release` flag. Inside `dist/{profile}/`, artifacts are organized by platform:
+**Build output.** Poly writes build artifacts to `dist/{profile}/` instead of `target/`. The `{profile}` is `debug` or `release` based on the `--release` flag. Compiled dependency artifacts live outside `dist/` in the project cache (`~/.cache/poly/{project}/{profile}/deps/`) so `dist/` only ever holds deliverables.
+
+After a successful packaged build, `dist/{profile}/` is removed — the merged archive is the only thing left:
 
 ```
 dist/
-├── debug/
-│   ├── linux/
-│   │   ├── poly
-│   │   └── libpoly_core.rlib
-│   ├── windows/
-│   │   └── poly.exe
-│   └── *.vfsx.tar.zst            ← VFSX packages per platform
-└── release/
-    └── ...
+└── {name}-{version}-{profile}.vfsx.tar.zst   ← combined package
 ```
+
+`poly build --no-package` keeps the per-profile tree (`bin/` executables + per-platform VFSX archives) for inspection.
 
 **Cross-compilation.** Poly compiles for both Windows and Linux by default. There is no `--target` flag to choose an OS; Poly always produces binaries for both platforms. For Rust, this uses `--target x86_64-unknown-linux-gnu` and `--target x86_64-pc-windows-gnu`. For Go, it sets `GOOS=linux` and `GOOS=windows`. For C/C++, it uses the appropriate compiler or cross-compiler.
 
-**VFSX packaging.** After building, Poly packages the compiled binaries as VFSX archives using the external `vfsx` command (`vfsx create <dir> -o <out> -c zstd`). Each platform gets its own archive containing all binaries for that platform. The archives are named `{project}-{platform}.{profile}.vfsx.tar.zst` and are written to `dist/{profile}/`.
+**VFSX packaging.** After building, Poly packages the compiled binaries as VFSX archives using the external `vfsx` command (`vfsx create <dir> -o <out> -c zstd`). Each platform gets its own archive containing all binaries for that platform, named `{project}-{platform}.{profile}.vfsx.tar.zst`. These per-platform archives are intermediates: the final step merges them into the combined `{name}-{version}-{profile}.vfsx.tar.zst` package at the `dist/` root.
 
 ---
 
@@ -340,10 +332,10 @@ dist/
 
 ### 8.1 Package format
 
-A package is one VFSX archive, for example `my-app-1.0.0.vfsx.tar.zst`. It is signed as a whole.
+A package is one VFSX archive, for example `my-app-1.0.0-release.vfsx.tar.zst`. It is signed as a whole.
 
 ```
-my-app-1.0.0.vfsx.tar.zst          (VFSX-signed)
+my-app-1.0.0-release.vfsx.tar.zst   (VFSX-signed)
 ├── vfsx.manifest.json             ← Metadata and signatures
 ├── src/                           ← Source code
 ├── poly.lock                      ← Dependency lock file
@@ -359,13 +351,12 @@ Each platform directory holds one executable. That executable contains the code 
 
 Each target produced for a platform is linked into one executable by `poly-linker`. The single-executable packaging reuses code from Jiggle, which already builds native languages and links them into one output.
 
-Poly applies the same packaging rules everywhere: a published package holds one executable per platform, and installing it needs only that executable.
+Poly applies the same packaging rules everywhere: a package holds one executable per platform, and running it needs only that executable.
 
 ### 8.3 Signing
 
-- All packages are VFSX archives
-- Downloaded packages are verified before they are extracted
-- Published packages are signed automatically
+- Packages are VFSX archives
+- Packages are verified before they are extracted
 - Sources are trust-pinned
 
 ```bash
@@ -374,50 +365,19 @@ poly verify                     # verify all signatures
 poly trust add axiomwtf         # add a trusted signer
 poly trust list
 poly trust remove <key>
-poly publish                    # publish to crates.io, signed
 ```
 
 ---
 
-## 9. Publishing and Installing
+## 9. Packaging
 
-### 9.1 Publishing
+Every `poly build` produces the combined package `dist/{name}-{version}-{profile}.vfsx.tar.zst` (containing `package.json`, `poly.lock`, and one executable per platform under `bin/<platform>/`). After the archive is written, `dist/{profile}/` is removed so `dist/` holds only the package. `poly build --no-package` skips packaging and keeps the build tree.
 
-`[publish]` in `poly.ini` sets the targets and platforms. For each platform, the build produces one executable and packs it into the package archive. Optional documentation is included when `include_docs = true`.
+`[publish]` in `poly.ini` sets package metadata: `platforms` selects which platform executables are included, `include_docs = true` bundles sources, and `crateName` controls crates.io naming recorded in `package.json` dependencies.
 
-Every `poly build` also produces the combined installable package `dist/{name}-{version}.vfsx.tar.zst` (containing `package.json`, `poly.lock`, and one executable per platform under `bin/<platform>/`). `poly build --no-package` skips this.
+`poly login`/`poly logout` manage registry API tokens in `~/.config/poly/credentials.toml` (`0600`); token resolution order: `CARGO_REGISTRY_TOKEN` env → Poly credentials → `~/.cargo/credentials.toml`.
 
-**crates.io**: `poly publish` uploads one `.crate` archive per `rust:*` publish target. Each `.crate` is a gzipped tarball of the *entire project source tree* plus `poly.ini`, `poly.lock`, and a stub `Cargo.toml`/`Cargo.toml.orig`. The stub exists only for registry compatibility — it declares `[package]` metadata and a single target pointing at the crate's sources, but no real dependencies; `poly.ini` remains the source of truth and `cargo` cannot meaningfully build the crate.
-
-Crate naming:
-
-- `[publish] crateName = "foo"` with a single Rust target → crate `foo`
-- `[publish] crateName` with multiple Rust targets → `foo-<suffix>` per target (the `{project}-` prefix is stripped, e.g. `poly-tools` → `foo-tools`)
-- No `crateName` → the target id itself
-
-**Auth**: `poly login` prompts for an API token (hidden input) and stores it in `~/.config/poly/credentials.toml` (`0600`); `poly logout` removes it. Token resolution order: `CARGO_REGISTRY_TOKEN` env → Poly credentials → `~/.cargo/credentials.toml`.
-
-**Custom registries**: `[publish] registry = "https://…"` (+ optional `tokenEnv`) additionally uploads the `.vfsx.tar.zst` package to `{registry}/api/v1/packages` with `x-poly-name`/`x-poly-version` headers and bearer auth.
-
-Publish is resilient: already-uploaded versions are skipped, per-target failures are reported together, and crates.io rate limits can be retried safely.
-
-Installers (deb, rpm, msi) can be generated from the same package.
-
-### 9.2 Installing
-
-```bash
-poly install my-app                          # from crates.io: download .crate, build with Poly, install
-poly install my-app@1.2.3                    # pinned version
-poly install my-app --local ./my-app-1.0.0.vfsx.tar.zst
-poly install my-app                          # Poly registry when POLY_REGISTRY_URL/[publish] registry is set
-poly uninstall my-app
-poly update my-app                           # update an installed package
-poly update                                  # update Poly itself
-```
-
-Registry resolution order: `--local` file → `POLY_REGISTRY_URL`/`[publish] registry` (serves `.vfsx.tar.zst`) → crates.io (serves `.crate` source packages, which Poly compiles locally before installing).
-
-Installing verifies the signature where configured, selects the executable for the current platform and places it on the path. System integration (systemd, launchd) is optional.
+`poly uninstall <package>` removes an installed package. Installers (deb, rpm, msi) can be generated from the same package.
 
 ---
 
@@ -444,12 +404,15 @@ poly fmt                        # format everything
 
 Linting can run on every build and can gate CI. Pre-commit hooks are supported.
 
-**Naming rules per linter.** The camelCase rules in section 5.3 apply to `poly lint` as well as to builds:
+**Poly lints Rust sources natively.** `poly lint` does not invoke rustc or clippy for naming checks. Poly scans each Rust target's own `sources` directly — declarations (`fn`, `struct`, `enum`, `trait`, `union`, `type`, `const`, `static`, `mod`), `let`/`for` bindings, `macro_rules!` names, function parameters, and struct fields — and warns on every identifier that is not camelCase per section 5.3:
 
-- **clippy:** `poly lint` passes `-A non_snake_case` to clippy, the same suppression used for `rustc` builds.
-- **clang-tidy:** the `readability-identifier-naming` check is off by default. Poly does not enable it. A project can turn it on in its own `.clang-tidy` file.
-- **golangci-lint:** Go's own naming style is camelCase, so no suppression is needed. `poly lint` does not enable `revive` naming rules that flag camelCase.
-- **rustfmt, clang-format, gofmt:** these format code and don't check identifier names, so they are unaffected.
+```
+crates/poly/src/migrate.rs:555: warning: identifier `pkg_name` is not camelCase
+```
+
+Only the project's own sources are scanned. Dependency crates and registry packages are never linted, and no compiler or linter toolchain is required for the naming pass.
+
+**Other languages keep their toolchains.** C/C++ targets lint through `clang --analyze` (or `gcc -fsyntax-only -Wall -Wextra` as fallback). Go targets lint through `go vet`. Neither runs a camelCase pass — Go's own naming style already matches section 5.3.
 
 Config keys in `poly.ini` are never read by the linters, so they are unaffected too.
 
@@ -469,7 +432,7 @@ Docs are generated for every language. API references are extracted from the sou
 poly version bump minor
 poly version check              # detect breaking changes
 poly version generate-changelog
-poly release                    # tag, build, publish
+poly release                    # build release and package
 poly release --dry-run
 ```
 
@@ -636,7 +599,6 @@ poly verify
 poly trust add|list|remove <key>
 poly login [registry] [--token <t>]
 poly logout [registry]
-poly publish
 
 # Quality
 poly lint
@@ -648,9 +610,7 @@ poly test --coverage|--benchmark
 poly toolchain install|use|list <spec>
 
 # Packages
-poly install <package> | --local <file>
 poly uninstall <package>
-poly update
 
 # Security
 poly audit [fix]
@@ -746,7 +706,7 @@ poly ide vscode|neovim|lsp
 | Cross-compilation | ✅ | ✅ | ✅ | ✅ |
 | Config format | INI | TOML | CMake language | go.mod |
 | Plugin system | ✅ | ❌ | ❌ | ❌ |
-| Replaces | Cargo, CMake, Make, go mod | — | — | — |
+| Replaces | Cargo, CMake, Make, go build (pure-Go) | — | — | — |
 
 ---
 

@@ -141,7 +141,7 @@ footer .c{display:flex;justify-content:space-between;gap:12px}
   <div class="c">
     <h1>Poly<em>.</em></h1>
     <div class="meta">
-      <div>Spec<b>0.2.0</b></div>
+      <div>Spec<b>0.2.1</b></div>
       <div>Status<b>Available</b></div>
       <div>Languages<b>3</b></div>
       <div>Config<b>INI</b></div>
@@ -244,12 +244,12 @@ poly lock</pre>
       <div><dt>Go</dt><dd>Calls <code>go tool compile</code> and <code>go tool link</code>. Modules are read from <code>poly.ini</code> and no go.mod is used. It handles vendoring and CGO.</dd></div>
     </dl>
     <div class="prose" style="margin-top:32px">
-      <p><strong>Cross-compiles by default.</strong> Every <code>poly build</code> produces binaries for both Windows and Linux—there's no flag to pick just one OS. Artifacts go to <code>dist/{profile}/</code>, organized by platform, and each platform's binaries are packaged as a VFSX archive.</p>
+      <p><strong>Cross-compiles by default.</strong> Every <code>poly build</code> produces binaries for both Windows and Linux—there's no flag to pick just one OS. Artifacts go to <code>dist/{profile}/</code>, organized by platform, and the build finishes with one combined VFSX package at the <code>dist/</code> root.</p>
     </div>
 <pre>poly build                          # all targets, Windows + Linux
 poly build --release                # release profile
 poly clean</pre>
-    <p class="note">Output: <code>dist/debug/linux/</code>, <code>dist/debug/windows/</code>, and <code>dist/debug/{project}-{platform}.debug.vfsx</code> archives.</p>
+    <p class="note">Output: <code>dist/{name}-{version}-{profile}.vfsx.tar.zst</code> — the per-profile build tree is removed once the package is written (<code>--no-package</code> keeps it).</p>
   </div>
 </section>
 
@@ -257,8 +257,8 @@ poly clean</pre>
   <div class="c">
     <div class="head"><h2>Signed by default.</h2></div>
     <div class="prose">
-      <p>A Poly package is one <a href="vfsx.html">vfsx</a> archive, like <code>my-app-1.0.0.vfsx.tar.zst</code>. It holds the source, the lock file, a signed manifest, and one executable per platform. Each executable contains every language the package uses, so there are no per-language binaries to install.</p>
-      <p>Downloads are verified before they're extracted, and published packages are signed automatically.</p>
+      <p>A Poly package is one <a href="vfsx.html">vfsx</a> archive, like <code>my-app-1.0.0-release.vfsx.tar.zst</code>. It holds the source, the lock file, a signed manifest, and one executable per platform. Each executable contains every language the package uses, so there are no per-language binaries to install.</p>
+      <p>Packages are verified before they're extracted, and signing is on by default.</p>
     </div>
 <pre>[vfsx]
 sign = true
@@ -269,8 +269,7 @@ trustStore = ~/.poly/trust/</pre>
 poly verify
 poly trust add axiomwtf
 poly trust list
-poly trust remove &lt;key&gt;
-poly publish</pre>
+poly trust remove &lt;key&gt;</pre>
   </div>
 </section>
 
@@ -285,7 +284,7 @@ poly publish</pre>
           <tr><td>Lint and format</td><td><code>poly lint</code>, <code>poly fmt</code></td><td>Runs clippy, clang-tidy and golangci-lint, and formats with rustfmt, clang-format and gofmt. Clippy gets the same camelCase allowance as builds. clang-tidy's naming check stays off unless the project enables it.</td></tr>
           <tr><td>Docs</td><td><code>poly doc</code></td><td>Generates documentation for every language, and can serve it locally.</td></tr>
           <tr><td>Toolchains</td><td><code>poly toolchain</code></td><td>Installs several Rust, Go and compiler versions and pins one per project.</td></tr>
-          <tr><td>Cross-compiling</td><td>Automatic</td><td>Poly builds for Windows and Linux by default. Artifacts go to <code>dist/{profile}/{platform}/</code> and each platform gets a VFSX archive.</td></tr>
+          <tr><td>Cross-compiling</td><td>Automatic</td><td>Poly builds for Windows and Linux by default. Artifacts go to <code>dist/{profile}/{platform}/</code> and the build ends with one combined VFSX package.</td></tr>
           <tr><td>CI</td><td><code>poly ci</code></td><td>Generates GitHub Actions, GitLab CI or Dockerfile configs from poly.ini.</td></tr>
           <tr><td>Security</td><td><code>poly audit</code>, <code>poly sbom</code></td><td>Checks for known vulnerabilities and generates an SBOM in SPDX or CycloneDX.</td></tr>
           <tr><td>Migration</td><td><code>poly migrate</code></td><td>Converts Cargo.toml, go.mod and CMakeLists.txt into poly.ini.</td></tr>
@@ -322,7 +321,7 @@ poly publish</pre>
 <footer>
   <div class="c">
     <span>© Axiom</span>
-    <span>Poly 0.2.0</span>
+    <span>Poly 0.2.1</span>
   </div>
 </footer>
 </body>
