@@ -15,7 +15,7 @@ Poly is not a wrapper. It calls the compilers itself:
 
 - **Rust:** `rustc` directly. No Cargo.
 - **C/C++:** `gcc`, `clang` or `msvc` directly. No CMake, Make, Meson or Autotools.
-- **Go:** `go tool compile` and `go tool link` directly for pure-Go packages. Module-aware operations (cgo builds, `poly test`, `poly lint`) delegate to the `go` command — poly does not implement a Go module/build system.
+- **Go:** `go tool compile` and `go tool link` directly for pure-Go packages. Module-aware operations (cgo builds, `poly test`, `poly lint`) delegate to the `go` command - poly does not implement a Go module/build system.
 
 Poly does its own dependency resolution, build graph construction, incremental compilation and linking.
 
@@ -292,7 +292,7 @@ poly lock
 
 ### 7.3 Go (direct go tool)
 
-- Pure-Go packages compile through `go tool compile` and `go tool link` invoked directly — no `go build`, no `go.mod`. Poly generates the `importcfg` itself.
+- Pure-Go packages compile through `go tool compile` and `go tool link` invoked directly - no `go build`, no `go.mod`. Poly generates the `importcfg` itself.
 - Dependency export data (`.a` files for stdlib and imports) is resolved with `go list -export -deps`, which compiles packages on demand. Poly does not reimplement Go's package loader or builder; this is the one place the `go` command participates in a pure-Go build.
 - CGO packages, `poly test`, and `poly lint` for Go delegate to the `go` command (`go build`, `go test`, `go vet`): cgo file generation and testmain synthesis have no `go tool`-level equivalent.
 - `go.mod`/`go.sum` are not read. Go target dependencies declared in `poly.ini` are not yet wired into the resolver (currently empty); module-mode operations fall back to the `go` command's own resolution.
@@ -313,7 +313,7 @@ poly clean
 
 **Build output.** Poly writes build artifacts to `dist/{profile}/` instead of `target/`. The `{profile}` is `debug` or `release` based on the `--release` flag. Compiled dependency artifacts live outside `dist/` in the project cache (`~/.cache/poly/{project}/{profile}/deps/`) so `dist/` only ever holds deliverables.
 
-After a successful packaged build, `dist/{profile}/` is removed — the merged archive is the only thing left:
+After a successful packaged build, `dist/{profile}/` is removed - the merged archive is the only thing left:
 
 ```
 dist/
@@ -404,7 +404,7 @@ poly fmt                        # format everything
 
 Linting can run on every build and can gate CI. Pre-commit hooks are supported.
 
-**Poly lints Rust sources natively.** `poly lint` does not invoke rustc or clippy for naming checks. Poly scans each Rust target's own `sources` directly — declarations (`fn`, `struct`, `enum`, `trait`, `union`, `type`, `const`, `static`, `mod`), `let`/`for` bindings, `macro_rules!` names, function parameters, and struct fields — and warns on every identifier that is not camelCase per section 5.3:
+**Poly lints Rust sources natively.** `poly lint` does not invoke rustc or clippy for naming checks. Poly scans each Rust target's own `sources` directly - declarations (`fn`, `struct`, `enum`, `trait`, `union`, `type`, `const`, `static`, `mod`), `let`/`for` bindings, `macro_rules!` names, function parameters, and struct fields - and warns on every identifier that is not camelCase per section 5.3:
 
 ```
 crates/poly/src/migrate.rs:555: warning: identifier `pkg_name` is not camelCase
@@ -412,7 +412,7 @@ crates/poly/src/migrate.rs:555: warning: identifier `pkg_name` is not camelCase
 
 Only the project's own sources are scanned. Dependency crates and registry packages are never linted, and no compiler or linter toolchain is required for the naming pass.
 
-**Other languages keep their toolchains.** C/C++ targets lint through `clang --analyze` (or `gcc -fsyntax-only -Wall -Wextra` as fallback). Go targets lint through `go vet`. Neither runs a camelCase pass — Go's own naming style already matches section 5.3.
+**Other languages keep their toolchains.** C/C++ targets lint through `clang --analyze` (or `gcc -fsyntax-only -Wall -Wextra` as fallback). Go targets lint through `go vet`. Neither runs a camelCase pass - Go's own naming style already matches section 5.3.
 
 Config keys in `poly.ini` are never read by the linters, so they are unaffected too.
 
@@ -706,7 +706,7 @@ poly ide vscode|neovim|lsp
 | Cross-compilation | ✅ | ✅ | ✅ | ✅ |
 | Config format | INI | TOML | CMake language | go.mod |
 | Plugin system | ✅ | ❌ | ❌ | ❌ |
-| Replaces | Cargo, CMake, Make, go build (pure-Go) | — | — | — |
+| Replaces | Cargo, CMake, Make, go build (pure-Go) | - | - | - |
 
 ---
 

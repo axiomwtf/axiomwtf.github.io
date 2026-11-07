@@ -244,12 +244,12 @@ poly lock</pre>
       <div><dt>Go</dt><dd>Calls <code>go tool compile</code> and <code>go tool link</code>. Modules are read from <code>poly.ini</code> and no go.mod is used. It handles vendoring and CGO.</dd></div>
     </dl>
     <div class="prose" style="margin-top:32px">
-      <p><strong>Cross-compiles by default.</strong> Every <code>poly build</code> produces binaries for both Windows and Linux—there's no flag to pick just one OS. Artifacts go to <code>dist/{profile}/</code>, organized by platform, and the build finishes with one combined VFSX package at the <code>dist/</code> root.</p>
+      <p><strong>Cross-compiles by default.</strong> Every <code>poly build</code> produces binaries for both Windows and Linux-there's no flag to pick just one OS. Artifacts go to <code>dist/{profile}/</code>, organized by platform, and the build finishes with one combined VFSX package at the <code>dist/</code> root.</p>
     </div>
 <pre>poly build                          # all targets, Windows + Linux
 poly build --release                # release profile
 poly clean</pre>
-    <p class="note">Output: <code>dist/{name}-{version}-{profile}.vfsx.tar.zst</code> — the per-profile build tree is removed once the package is written (<code>--no-package</code> keeps it).</p>
+    <p class="note">Output: <code>dist/{name}-{version}-{profile}.vfsx.tar.zst</code> - the per-profile build tree is removed once the package is written (<code>--no-package</code> keeps it).</p>
   </div>
 </section>
 
