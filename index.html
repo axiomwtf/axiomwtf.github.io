@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Axiom: small software tools</title>
-<meta name="description" content="Axiom is a small independent software studio. Right now that means two tools: vfsx and Poly.">
+<meta name="description" content="Axiom is a small independent software studio. Right now that means three tools: vfsx, Poly and knit.">
 <meta property="og:title" content="Axiom: small software tools">
-<meta property="og:description" content="Axiom is a small independent software studio. Right now that means two tools: vfsx and Poly.">
+<meta property="og:description" content="Axiom is a small independent software studio. Right now that means three tools: vfsx, Poly and knit.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-1 -1 2 2'%3E%3Cpath d='M0,-1 C.05,-.28 .28,-.05 1,0 C.28,.05 .05,.28 0,1 C-.05,.28 -.28,.05 -1,0 C-.28,-.05 -.05,-.28 0,-1Z' fill='%23f2f2f2'/%3E%3C/svg%3E">
@@ -52,7 +52,7 @@ h2{font:800 52px/1.05 var(--d);text-transform:uppercase}
 .p h3{font:800 20px var(--d);text-transform:uppercase;margin-bottom:6px}
 .p p{color:var(--soft);overflow-wrap:anywhere}
 
-.work{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.work{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
 .w{display:flex;flex-direction:column;justify-content:space-between;min-height:320px;padding:24px;border:2px solid var(--ink);background:var(--paper);text-decoration:none;box-shadow:8px 8px 0 var(--ink);transition:transform .15s,box-shadow .15s}
 .w:hover{transform:translate(-4px,-4px);box-shadow:12px 12px 0 var(--sig)}
 .w h3{font:900 80px/.95 var(--d);text-transform:uppercase}
@@ -150,7 +150,7 @@ footer .c{display:flex;justify-content:space-between;gap:12px}
 
 <section id="work">
   <div class="c">
-    <div class="head"><h2>Two tools so far.</h2></div>
+    <div class="head"><h2>Three tools so far.</h2></div>
     <div class="work">
       <a class="w" href="vfsx.html">
         <div>
@@ -163,6 +163,13 @@ footer .c{display:flex;justify-content:space-between;gap:12px}
         <div>
           <h3>Poly</h3>
           <p>One build system and package manager for Rust, C/C++ and Go, with signed packages.</p>
+        </div>
+        <span>→</span>
+      </a>
+      <a class="w" href="knit.html">
+        <div>
+          <h3>knit</h3>
+          <p>A version control system and a from-scratch alternative to Git. The whole repo is one signed .knit file.</p>
         </div>
         <span>→</span>
       </a>
