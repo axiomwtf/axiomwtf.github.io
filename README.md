@@ -22,7 +22,10 @@ Axiom is a small independent software studio. This repository is the source for 
 - `jiggle.html` covers Jiggle.
 - `vfsx.html` covers vfsx.
 - `poly.html` covers Poly.
+- `knit.html` covers knit.
+- `vfsxspec.md` is the vfsx spec.
 - `polyspec.md` is the Poly spec.
+- `knitspec.md` is the knit spec.
 
 Each page is a single HTML file with its CSS and favicon inlined, so there is no build step or framework. The only thing loaded from outside is the fonts (Archivo and Spline Sans Mono) from Google Fonts. Pushing to `main` publishes the site through GitHub Pages.
 
@@ -38,7 +41,9 @@ python3 -m http.server
 
 ## Spec
 
-The full Poly specification is in [`polyspec.md`](./polyspec.md).
+- vfsx: [`vfsxspec.md`](./vfsxspec.md)
+- Poly: [`polyspec.md`](./polyspec.md)
+- knit: [`knitspec.md`](./knitspec.md)
 
 ## License
 
