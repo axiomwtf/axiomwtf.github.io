@@ -1,10 +1,9 @@
-# Poly: Polyglot Build System and Package Manager
-
-**Spec version:** 0.2.1
-**Status:** Released.
+# Poly Build System and Package Manager Specification
+**Version:** 0.2.1
+**Ownership:** Poly is owned by AXIOM ![Axiom Logo](./axiom.svg)
+**Status:** Available.
 **License:** MPL-2.0
-**Last updated:** 2026-11-05
-
+**Last updated:** 2026-11-06
 ---
 
 ## 1. Overview
@@ -721,3 +720,7 @@ MPL-2.0. Source changes must be disclosed, the license must be included, and mod
 - Axiom: https://github.com/axiomwtf
 - VFSX: https://github.com/axiomwtf/vfsx
 - Poly is an Axiom project. Contributions are welcome.
+
+---
+
+*End of Specification*
