@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>knit: version control, one file</title>
-<meta name="description" content="knit is a version control system and a from-scratch alternative to Git. The whole repository is a single signed .knit file.">
+<meta name="description" content="knit is a version control system written in Rust. The whole repository is a single .knit file, and every knot is signed.">
 <meta property="og:title" content="knit: version control, one file">
-<meta property="og:description" content="knit is a version control system and a from-scratch alternative to Git. The whole repository is a single signed .knit file.">
+<meta property="og:description" content="knit is a version control system written in Rust. The whole repository is a single .knit file, and every knot is signed.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-1 -1 2 2'%3E%3Cpath d='M0,-1 C.05,-.28 .28,-.05 1,0 C.28,.05 .05,.28 0,1 C-.05,.28 -.28,.05 -1,0 C-.28,-.05 -.05,-.28 0,-1Z' fill='%23f2f2f2'/%3E%3C/svg%3E">
@@ -152,9 +152,10 @@ footer .c{display:flex;justify-content:space-between;gap:12px}
 
 <section id="overview">
   <div class="c">
-    <div class="head"><h2>A version control system and a from-scratch alternative to Git.</h2></div>
+    <div class="head"><h2>Version control in a single file.</h2></div>
     <div class="prose">
-      <p>knit keeps the entire repository - history, working-tree state, remotes, keys - inside a single append-only <code>.knit</code> file. There is no staging area: <code>knit tie</code> snapshots the working tree directly.</p>
+      <p>knit is a version control system and a from-scratch alternative to Git, written in Rust. The whole repository lives in one append-only <code>.knit</code> file.</p>
+      <p>There is no staging area. <code>knit tie</code> snapshots the working tree as it stands.</p>
       <p>The vocabulary is yarn: commits are knots, branches are strands, merges are joins, conflicts are snags, clones are pickups.</p>
     </div>
     <div style="margin-top:40px"><a class="cta" href="knitspec.md" target="_blank" rel="noopener">Read the spec!</a></div>
@@ -163,11 +164,11 @@ footer .c{display:flex;justify-content:space-between;gap:12px}
 
 <section id="yarnball">
   <div class="c">
-    <div class="head"><h2>One file, append-only, crash-tolerant.</h2></div>
+    <div class="head"><h2>Append-only, and safe to interrupt.</h2></div>
     <div class="list">
-      <div class="p"><b>I</b><div><h3>One file</h3><p>The whole repo - objects, strands, marks, stashes, hubs, stat cache - is a single <code>.knit</code> file. No sidecars.</p></div></div>
+      <div class="p"><b>I</b><div><h3>One file</h3><p>Objects, strands, marks, stashes, hubs and the stat cache all live in one <code>.knit</code> file. No sidecars.</p></div></div>
       <div class="p"><b>II</b><div><h3>Content-addressed</h3><p>Blobs, trees and knots are addressed by blake3 over canonical encodings.</p></div></div>
-      <div class="p"><b>III</b><div><h3>Crash-safe</h3><p>CRC-protected frames, a torn tail is ignored, and <code>flock</code> on the file itself is the only lock.</p></div></div>
+      <div class="p"><b>III</b><div><h3>Crash-safe</h3><p>Every frame is CRC-protected, a torn tail is ignored, and <code>flock</code> on the file itself is the only lock.</p></div></div>
       <div class="p"><b>IV</b><div><h3>Git-compatible</h3><p>Trees, blobs and modes map onto Git's object model, so import is a translation, not a redesign.</p></div></div>
     </div>
 <pre>knit cast-on [dir]              # create a yarnball
@@ -182,7 +183,7 @@ knit rows                      # the knots on this strand</pre>
   <div class="c">
     <div class="head"><h2>Every knot is signed.</h2></div>
     <div class="prose" style="margin-bottom:32px">
-      <p>Each knot carries an Ed25519 signature over its canonical encoding, published as a <code>KEY</code> record the first time it signs. <code>knit pick</code> verifies the signature against the yarnball's known keys.</p>
+      <p>Every knot is signed with Ed25519 over its canonical encoding. The pubkey is published as a <code>KEY</code> record the first time it signs, and <code>knit pick</code> verifies against the yarnball's known keys.</p>
     </div>
     <dl class="rows">
       <div><dt>Cast on</dt><dd><code>knit cast-on [dir]</code> creates the yarnball</dd></div>
@@ -197,10 +198,10 @@ knit rows                      # the knots on this strand</pre>
 
 <section id="remotes">
   <div class="c">
-    <div class="head"><h2>Git import today, GitHub without git.</h2></div>
+    <div class="head"><h2>Reads Git. Never runs git.</h2></div>
     <div class="prose" style="margin-bottom:32px">
-      <p><code>knit pickup</code> reads Git repositories directly - loose objects and packfiles with OFS/REF delta chains - preserving modes, symlinks and commit IDs. Annotated tags become marks.</p>
-      <p>Hubs sync yarnballs over ssh through the <code>knits</code> stdio daemon, or to GitHub through <code>gh api</code>: blobs, trees and commits as JSON, never a git binary.</p>
+      <p><code>knit pickup</code> reads Git repositories directly, loose objects and packfiles with delta chains included, and preserves modes, symlinks and commit IDs. Annotated tags become marks.</p>
+      <p>Hubs sync yarnballs over ssh through the <code>knits</code> stdio daemon, or to GitHub through <code>gh api</code>. Blobs, trees and commits travel as JSON. No git binary anywhere.</p>
     </div>
     <div class="scroll">
       <table>
