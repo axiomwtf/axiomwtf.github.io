@@ -1,0 +1,4 @@
+# Netlify. Clean URLs, .html redirects, and a fallback that serves the app.
+/index.html        /            301
+/*.html            /:splat      301
+/*                 /index.html  200
